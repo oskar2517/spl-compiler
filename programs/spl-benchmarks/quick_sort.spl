@@ -1,0 +1,74 @@
+type SortableArray = array[99999] of int;
+
+proc pseudoRandom(ref last: int) {
+    var a: int;
+    var c: int;
+    var m: int;
+    var product: int;
+
+    a := 1103515245;
+    c := 12345;
+    m := 2147483647;
+
+
+    product := a * last + c;
+    last := product - (product / m) * m;
+}
+
+proc swap(ref arr: SortableArray, i: int, j: int) {
+    var t: int;
+    
+    t := arr[i];
+    arr[i] := arr[j];
+    arr[j] := t;
+}
+
+proc partition(ref arr: SortableArray, low: int, high: int, ref result: int) {
+    var pivot: int;
+    var i: int;
+    var j: int;
+
+    pivot := arr[high];
+
+    i := low - 1;
+    j := low;
+
+    while (j <= high - 1) {
+        if (arr[j] < pivot) {
+            i := i + 1;
+            swap(arr, i, j);
+        }
+
+        j := j + 1;
+    }
+
+    swap(arr, i + 1, high);
+    result := i + 1;
+}
+
+proc quickSort(ref arr: SortableArray, low: int, high: int) {
+    var p: int;
+
+    if (low < high) {
+        partition(arr, low, high, p);
+
+        quickSort(arr, low, p - 1);
+        quickSort(arr, p + 1, high);
+    }
+}
+
+proc main() {
+    var arr: SortableArray;
+    var last: int;
+    var i: int;
+
+    i := 0;
+    while (i < 99999) {
+        pseudoRandom(last);
+        arr[i] := last;
+
+        i := i + 1;
+    }
+
+    quickSort(arr, 0, 99999 - 1);
+}

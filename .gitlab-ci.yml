@@ -1,0 +1,21 @@
+build-job:
+  stage: build
+  only:
+    - master
+  tags:
+    - alpine
+  script:
+    - apk update
+    - apk add openjdk21-jdk --repository=https://dl-cdn.alpinelinux.org/alpine/edge/community
+    - apk add build-base
+    - apk add sdl2-dev
+    - chmod +x gradlew
+    - ./gradlew clean shadowJar
+    - gcc -c std/x86/stdlib.c -o stdlib.o
+    - gcc -c std/x86/stdlib.c -DHEADLESS -o stdlib_headless.o
+  artifacts:
+    paths:
+      - build/libs/shadow-*
+      - stdlib.o
+      - stdlib_headless.o
+

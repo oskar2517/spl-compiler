@@ -1,0 +1,33 @@
+type PrimesArray = array[999999] of int;
+
+proc sieveOfEratosthenes(n: int, ref primes: PrimesArray) {
+    var i: int;
+    var p: int;
+    var j: int;
+    
+    i := 0;
+    while (i < 999999) {
+        primes[i] := 1;
+        i := i + 1;
+    }
+
+    p := 2;
+    while (p * p <= n) {
+        if (primes[p] = 1) {
+            j := p * p;
+            while (j <= n) {
+                primes[j] := 0;
+                j := j + p;
+            }
+
+        }
+
+        p := p + 1;
+    }
+}
+
+proc main() {
+    var primes: PrimesArray;
+
+    sieveOfEratosthenes(999998, primes);
+}

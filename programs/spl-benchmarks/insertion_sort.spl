@@ -1,0 +1,74 @@
+type SortableArray = array[99999] of int;
+
+proc pseudoRandom(ref last: int) {
+    var a: int;
+    var c: int;
+    var m: int;
+    var product: int;
+
+    a := 1103515245;
+    c := 12345;
+    m := 2147483647;
+
+
+    product := a * last + c;
+    last := product - (product / m) * m;
+} 
+
+proc insertionSort(ref arr: SortableArray, n: int) {
+    var i: int;
+    var j: int;
+    var key: int;
+    var condition: int;
+
+    i := 1;
+    while (i < n) {
+        key := arr[i];
+        j := i - 1;
+
+        condition := 1;
+        if (j >= 0) {
+            if (arr[j] > key) {
+                condition := 1;
+            } else {
+                condition := 0;
+            }
+        } else {
+            condition := 0; 
+        }
+
+        while (condition = 1) {
+            arr[j + 1] := arr[j];
+            j := j - 1;
+
+            if (j >= 0) {
+                if (arr[j] > key) {
+                    condition := 1;
+                } else {
+                    condition := 0;
+                }
+            } else {
+                condition := 0;
+            }
+        }
+
+        arr[j + 1] := key;
+        i := i + 1;
+    }
+}
+
+proc main() {
+    var arr: SortableArray;
+    var last: int;
+    var i: int;
+
+    i := 0;
+    while (i < 99999) {
+        pseudoRandom(last);
+        arr[i] := last;
+
+        i := i + 1;
+    }
+
+    insertionSort(arr, 99999);
+}

@@ -1,0 +1,28 @@
+proc pseudoRandom(ref last: int) {
+    var a: int;
+    var c: int;
+    var m: int;
+    var product: int;
+
+    a := 1103515245;
+    c := 12345;
+    m := 2147483647;
+
+
+    product := a * last + c;
+    last := product - (product / m) * m;
+}
+
+proc main() {
+    var last: int;
+    var i: int;
+
+    last := 12345;
+
+    while (i < 100) {
+        pseudoRandom(last);
+        printi(last);
+        printc('\n');
+        i := i + 1;
+    }
+}
