@@ -221,7 +221,7 @@ public class Error {
 
     public void expressionMismatchedType(Expression expression, Type expected) {
         printErrorHead(expression.position, "mismatched types");
-        printCode(expression.position, -1, String.format("found `%s`, expected `%s`", expected, expression.dataType));
+        printCode(expression.position, -1, String.format("found `%s`, expected `%s`", expression.dataType, expected));
 
         System.exit(1);
     }
