@@ -4,7 +4,7 @@
 
 time_t start_time;
 
-void __init_time() {
+void __init_time(void) {
     start_time = time(NULL);
 }
 
@@ -20,7 +20,7 @@ void _printc(long long c) {
     printf("%c", (char) c);
 }
 
-void _exit() {
+void _exit(void) {
     exit(0);
 }
 
@@ -46,7 +46,7 @@ void _readc(long long *address) {
 SDL_Window* window;
 SDL_Renderer* renderer;
 
-void __sdl_init_screen() {
+void __sdl_init_screen(void) {
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         exit(1);
@@ -68,7 +68,7 @@ void __sdl_init_screen() {
     SDL_RenderClear(renderer);
 }
 
-void __sdl_event_loop() {
+void __sdl_event_loop(void) {
     SDL_RenderPresent(renderer);
     SDL_Event event;
     int quit = 0;
