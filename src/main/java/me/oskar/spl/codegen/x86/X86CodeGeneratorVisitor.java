@@ -10,10 +10,10 @@ import me.oskar.spl.type.ArrayType;
 
 public class X86CodeGeneratorVisitor extends BaseVisitor {
 
-    Register currentRegister = new Register(-1);
+    private Register currentRegister = new Register(-1);
+    private Label currentLabel = new Label(-1);
     private SymbolTable symbolTable;
     private final CodePrinter output;
-    private int labelIndex = 0;
 
     protected X86CodeGeneratorVisitor(SymbolTable symbolTable, CodePrinter output) {
         this.symbolTable = symbolTable;
@@ -28,19 +28,24 @@ public class X86CodeGeneratorVisitor extends BaseVisitor {
         currentRegister = currentRegister.previous();
     }
 
-    private void generateCondition(Expression condition, int label) {
+    private Label nextLabel() {
+        currentLabel = currentLabel.next();
+        return currentLabel;
+    }
+
+    private void generateCondition(Expression condition, Label label) {
         var binaryExpression = (BinaryExpression) condition;
         binaryExpression.leftOperand.accept(this);
         binaryExpression.rightOperand.accept(this);
         output.println("cmp %s, %s", currentRegister.previous(), currentRegister);
 
         switch (binaryExpression.operator) {
-            case EQUAL -> output.println("jne L%s", label);
-            case NOT_EQUAL -> output.println("je L%s", label);
-            case LESS_THAN -> output.println("jge L%s", label);
-            case LESS_THAN_EQUAL -> output.println("jg L%s", label);
-            case GREATER_THAN -> output.println("jle L%s", label);
-            case GREATER_THAN_EQUAL -> output.println("jl L%s", label);
+            case EQUAL -> output.println("jne %s", label);
+            case NOT_EQUAL -> output.println("je %s", label);
+            case LESS_THAN -> output.println("jge %s", label);
+            case LESS_THAN_EQUAL -> output.println("jg %s", label);
+            case GREATER_THAN -> output.println("jle %s", label);
+            case GREATER_THAN_EQUAL -> output.println("jl %s", label);
         }
 
         previousRegister();
@@ -99,37 +104,37 @@ public class X86CodeGeneratorVisitor extends BaseVisitor {
 
     @Override
     public void visit(IfStatement ifStatement) {
-        var label0 = labelIndex++;
+        var label0 = nextLabel();
 
         generateCondition(ifStatement.condition, label0);
 
         if (ifStatement.alternative instanceof EmptyStatement) {
             ifStatement.consequence.accept(this);
 
-            output.println("L%s:", label0);
+            output.println("%s:", label0);
         } else {
             ifStatement.consequence.accept(this);
-            int label1 = labelIndex++;
-            output.println("jmp L%s", label1);
+            var label1 = nextLabel();
+            output.println("jmp %s", label1);
 
-            output.println("L%s:", label0);
+            output.println("%s:", label0);
             ifStatement.alternative.accept(this);
-            output.println("L%s:", label1);
+            output.println("%s:", label1);
         }
     }
 
     @Override
     public void visit(WhileStatement whileStatement) {
-        var label0 = labelIndex++;
-        var label1 = labelIndex++;
+        var label0 = nextLabel();
+        var label1 = nextLabel();
 
-        output.println("L%s:", label0);
+        output.println("%s:", label0);
         generateCondition(whileStatement.condition, label1);
 
         whileStatement.body.accept(this);
 
-        output.println("jmp L%s", label0);
-        output.println("L%s:", label1);
+        output.println("jmp %s", label0);
+        output.println("%s:", label1);
     }
 
     @Override
