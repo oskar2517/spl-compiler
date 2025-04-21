@@ -70,10 +70,10 @@ public class JsCodeGeneratorVisitor extends BaseVisitor {
         var operator = switch (condition.operator) {
             case BinaryExpression.Operator.EQUAL -> "===";
             case BinaryExpression.Operator.NOT_EQUAL -> "!==";
-            case BinaryExpression.Operator.GREATER_THEN -> ">";
-            case BinaryExpression.Operator.GREATER_THEN_EQUAL -> ">=";
-            case BinaryExpression.Operator.LESS_THEN -> "<";
-            case BinaryExpression.Operator.LESS_THEN_EQUAL -> "<=";
+            case BinaryExpression.Operator.GREATER_THAN -> ">";
+            case BinaryExpression.Operator.GREATER_THAN_EQUAL -> ">=";
+            case BinaryExpression.Operator.LESS_THAN -> "<";
+            case BinaryExpression.Operator.LESS_THAN_EQUAL -> "<=";
             default -> throw new IllegalStateException();
         };
 

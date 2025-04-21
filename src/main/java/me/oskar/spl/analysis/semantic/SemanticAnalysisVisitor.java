@@ -57,7 +57,7 @@ public class SemanticAnalysisVisitor extends BaseVisitor {
 
         switch (binaryExpression.operator) {
             case ADD, SUBTRACT, MULTIPLY, DIVIDE -> binaryExpression.dataType = target.intType;
-            case LESS_THEN, LESS_THEN_EQUAL, GREATER_THEN, GREATER_THEN_EQUAL, EQUAL, NOT_EQUAL ->
+            case LESS_THAN, LESS_THAN_EQUAL, GREATER_THAN, GREATER_THAN_EQUAL, EQUAL, NOT_EQUAL ->
                     binaryExpression.dataType = target.boolType;
         }
     }

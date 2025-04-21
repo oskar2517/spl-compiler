@@ -368,10 +368,10 @@ public class Parser {
             var operator = currentToken;
 
             switch (operator.getType()) {
-                case LESS_THEN -> type = BinaryExpression.Operator.LESS_THEN;
-                case LESS_THEN_EQUAL -> type = BinaryExpression.Operator.LESS_THEN_EQUAL;
-                case GREATER_THEN -> type = BinaryExpression.Operator.GREATER_THEN;
-                case GREATER_THEN_EQUAL -> type = BinaryExpression.Operator.GREATER_THEN_EQUAL;
+                case LESS_THAN -> type = BinaryExpression.Operator.LESS_THAN;
+                case LESS_THAN_EQUAL -> type = BinaryExpression.Operator.LESS_THAN_EQUAL;
+                case GREATER_THAN -> type = BinaryExpression.Operator.GREATER_THAN;
+                case GREATER_THAN_EQUAL -> type = BinaryExpression.Operator.GREATER_THAN_EQUAL;
                 case EQUAL -> type = BinaryExpression.Operator.EQUAL;
                 case HASH -> type = BinaryExpression.Operator.NOT_EQUAL;
                 default -> {

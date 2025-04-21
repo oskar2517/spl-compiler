@@ -101,10 +101,10 @@ public class WasmCodeGeneratorVisitor extends BaseVisitor {
             case DIVIDE -> output.println("i32.div_s");
             case EQUAL -> output.println("i32.eq");
             case NOT_EQUAL -> output.println("i32.ne");
-            case GREATER_THEN -> output.println("i32.gt_s");
-            case GREATER_THEN_EQUAL -> output.println("i32.ge_s");
-            case LESS_THEN -> output.println("i32.lt_s");
-            case LESS_THEN_EQUAL -> output.println("i32.le_s");
+            case GREATER_THAN -> output.println("i32.gt_s");
+            case GREATER_THAN_EQUAL -> output.println("i32.ge_s");
+            case LESS_THAN -> output.println("i32.lt_s");
+            case LESS_THAN_EQUAL -> output.println("i32.le_s");
             default -> throw new IllegalStateException();
         }
     }

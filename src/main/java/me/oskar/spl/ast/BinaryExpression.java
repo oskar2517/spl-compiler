@@ -12,10 +12,10 @@ public class BinaryExpression extends Expression {
         DIVIDE,
         EQUAL,
         NOT_EQUAL,
-        LESS_THEN,
-        LESS_THEN_EQUAL,
-        GREATER_THEN,
-        GREATER_THEN_EQUAL
+        LESS_THAN,
+        LESS_THAN_EQUAL,
+        GREATER_THAN,
+        GREATER_THAN_EQUAL
     }
 
     public final Operator operator;

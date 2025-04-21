@@ -168,17 +168,17 @@ public class Lexer {
             case '<' -> {
                 if (readChar() == '=') {
                     nextChar();
-                    yield new Token(TokenType.LESS_THEN_EQUAL, "<=", tokenPosition);
+                    yield new Token(TokenType.LESS_THAN_EQUAL, "<=", tokenPosition);
                 } else {
-                    yield new Token(TokenType.LESS_THEN, "<", tokenPosition);
+                    yield new Token(TokenType.LESS_THAN, "<", tokenPosition);
                 }
             }
             case '>' -> {
                 if (readChar() == '=') {
                     nextChar();
-                    yield new Token(TokenType.GREATER_THEN_EQUAL, ">=", tokenPosition);
+                    yield new Token(TokenType.GREATER_THAN_EQUAL, ">=", tokenPosition);
                 } else {
-                    yield new Token(TokenType.GREATER_THEN, ">", tokenPosition);
+                    yield new Token(TokenType.GREATER_THAN, ">", tokenPosition);
                 }
             }
             case '\'' -> new Token(TokenType.CHAR, readCharLiteral(), tokenPosition);

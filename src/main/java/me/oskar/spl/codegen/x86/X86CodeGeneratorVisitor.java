@@ -37,10 +37,10 @@ public class X86CodeGeneratorVisitor extends BaseVisitor {
         switch (binaryExpression.operator) {
             case EQUAL -> output.println("jne L%s", label);
             case NOT_EQUAL -> output.println("je L%s", label);
-            case LESS_THEN -> output.println("jge L%s", label);
-            case LESS_THEN_EQUAL -> output.println("jg L%s", label);
-            case GREATER_THEN -> output.println("jle L%s", label);
-            case GREATER_THEN_EQUAL -> output.println("jl L%s", label);
+            case LESS_THAN -> output.println("jge L%s", label);
+            case LESS_THAN_EQUAL -> output.println("jg L%s", label);
+            case GREATER_THAN -> output.println("jle L%s", label);
+            case GREATER_THAN_EQUAL -> output.println("jl L%s", label);
         }
 
         previousRegister();
