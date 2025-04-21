@@ -86,6 +86,9 @@ public class Lexer {
         }
 
         nextChar(); // Skip second '
+        if (currentChar != '\'') {
+            return null;
+        }
 
         return String.valueOf(c);
     }
@@ -181,7 +184,13 @@ public class Lexer {
                     yield new Token(TokenType.GREATER_THAN, ">", tokenPosition);
                 }
             }
-            case '\'' -> new Token(TokenType.CHAR, readCharLiteral(), tokenPosition);
+            case '\'' -> {
+                var literal = readCharLiteral();
+                if (literal == null) {
+                    yield new Token(TokenType.ILLEGAL, String.valueOf(currentChar), tokenPosition);
+                }
+                yield new Token(TokenType.CHAR, literal, tokenPosition);
+            }
             case EOF -> new Token(TokenType.EOF, String.valueOf(EOF), tokenPosition);
             default -> {
                 if (currentChar == '0' && readChar() == 'x') {
