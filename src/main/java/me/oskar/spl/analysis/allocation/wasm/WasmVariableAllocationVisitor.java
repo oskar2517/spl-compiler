@@ -56,7 +56,8 @@ public class WasmVariableAllocationVisitor extends BaseVisitor {
 
         if (entry.getType() instanceof ArrayType) {
             entry.setInMemory(true);
-            entry.setPosition(String.valueOf(-stackLayout.localVariableAreaSize - entry.getType().getByteSize()));
+            var variableOffset = -stackLayout.localVariableAreaSize - entry.getType().getByteSize();
+            entry.setPosition(new LinearMemoryPosition(variableOffset));
             stackLayout.localVariableAreaSize += entry.getType().getByteSize();
         }
     }
@@ -83,7 +84,8 @@ public class WasmVariableAllocationVisitor extends BaseVisitor {
 
         if (!variableEntry.isInMemory() && !variableEntry.isReference()) {
             variableEntry.setInMemory(true);
-            variableEntry.setPosition(String.valueOf(-stackLayout.localVariableAreaSize - namedVariable.dataType.getByteSize()));
+            var variableOffset = -stackLayout.localVariableAreaSize - namedVariable.dataType.getByteSize();
+            variableEntry.setPosition(new LinearMemoryPosition(variableOffset));
             stackLayout.localVariableAreaSize += namedVariable.dataType.getByteSize();
         }
     }

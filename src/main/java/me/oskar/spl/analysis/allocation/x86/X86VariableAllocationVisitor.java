@@ -14,6 +14,16 @@ public class X86VariableAllocationVisitor extends BaseVisitor {
     private final SymbolTable symbolTable;
     private final Target target;
     private final ProcedureEntry currentProcedure;
+    private final RegisterPosition rbpRegister = new RegisterPosition("rbp");
+    private final RegisterPosition rspRegister = new RegisterPosition("rsp");
+    private final RegisterPosition[] callRegisters = new RegisterPosition[]{
+            new RegisterPosition("rdi"),
+            new RegisterPosition("rsi"),
+            new RegisterPosition("rdx"),
+            new RegisterPosition("rcx"),
+            new RegisterPosition("r8"),
+            new RegisterPosition("r9")
+    };
 
     protected X86VariableAllocationVisitor(SymbolTable symbolTable, Target target) {
         this.symbolTable = symbolTable;
@@ -44,21 +54,27 @@ public class X86VariableAllocationVisitor extends BaseVisitor {
             v.accept(variableAllocationVisitor);
         }
 
-        var callRegisters = new String[] { "rdi", "rsi", "rdx", "rcx", "r8", "r9" };
-
-        for (var i = 0; i < procedureDeclaration.parameters.size(); i++) { // TODO: dont use indexes for parametertypes
-            var variableEntry = (VariableEntry) procEntry.getLocalTable().lookup(procedureDeclaration.parameters.get(i).name);
+        for (var i = 0; i < procedureDeclaration.parameters.size(); i++) {
+            var variableEntry = (VariableEntry) procEntry.getLocalTable()
+                    .lookup(procedureDeclaration.parameters.get(i).name);
             var parameterType = procEntry.getParameterTypes().get(i);
 
             if (i < 6) {
                 parameterType.setPosition(callRegisters[i]);
-                variableEntry.setPosition("[rbp+" + (-stackLayout.localVariableAreaSize -
-                        (parameterType.isReference() ? target.wordSize : variableEntry.getType().getByteSize())) + "]");
-                stackLayout.localVariableAreaSize += parameterType.isReference() ? target.wordSize : variableEntry.getType().getByteSize();
+                var variableOffset = -stackLayout.localVariableAreaSize - (parameterType.isReference()
+                        ? target.wordSize
+                        : variableEntry.getType().getByteSize());
+                variableEntry.setPosition(new StackPosition(rbpRegister, variableOffset));
+                stackLayout.localVariableAreaSize += parameterType.isReference()
+                        ? target.wordSize
+                        : variableEntry.getType().getByteSize();
             } else {
-                parameterType.setPosition("[rsp+" + stackLayout.argumentAreaSize + "]");
-                variableEntry.setPosition("[rbp+" + (stackLayout.argumentAreaSize + 16) + "]");  // old frame pointer (8) + return address (8)
-                stackLayout.argumentAreaSize += parameterType.isReference() ? target.wordSize : variableEntry.getType().getByteSize();
+                parameterType.setPosition(new StackPosition(rspRegister, stackLayout.argumentAreaSize));
+                // old frame pointer (8) + return address (8)
+                variableEntry.setPosition(new StackPosition(rbpRegister, stackLayout.argumentAreaSize + 16));
+                stackLayout.argumentAreaSize += parameterType.isReference()
+                        ? target.wordSize
+                        : variableEntry.getType().getByteSize();
             }
         }
 
@@ -74,7 +90,8 @@ public class X86VariableAllocationVisitor extends BaseVisitor {
         var stackLayout = (X86StackLayout) currentProcedure.getStackLayout();
 
         entry.setInMemory(true);
-        entry.setPosition("[rbp+" + (-stackLayout.localVariableAreaSize - entry.getType().getByteSize()) + "]");
+        entry.setPosition(new StackPosition(rbpRegister,
+                -stackLayout.localVariableAreaSize - entry.getType().getByteSize()));
         stackLayout.localVariableAreaSize += entry.getType().getByteSize();
     }
 }

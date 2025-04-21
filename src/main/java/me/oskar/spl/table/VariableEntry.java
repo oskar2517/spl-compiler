@@ -7,7 +7,7 @@ public class VariableEntry implements SymbolTableEntry {
     private final Type type;
     private final boolean reference;
     private boolean inMemory = false;
-    private String position;
+    private VariablePosition position;
 
     public VariableEntry(Type type, boolean reference) {
         this.type = type;
@@ -30,11 +30,11 @@ public class VariableEntry implements SymbolTableEntry {
         this.inMemory = inMemory;
     }
 
-    public String getPosition() {
+    public VariablePosition getPosition() {
         return position;
     }
 
-    public void setPosition(String position) {
+    public void setPosition(VariablePosition position) {
         this.position = position;
     }
 

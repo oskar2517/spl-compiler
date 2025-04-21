@@ -91,9 +91,9 @@ public class X86CodeGeneratorVisitor extends BaseVisitor {
 
         nextRegister();
         if (variableEntry.isReference()) {
-            output.println(String.format("mov %s, %s", currentRegister, variableEntry.getPosition()));
+            output.println(String.format("mov %s, %s", currentRegister, variableEntry.getPosition().getRealPosition()));
         } else {
-            output.println(String.format("lea %s, %s", currentRegister, variableEntry.getPosition()));
+            output.println(String.format("lea %s, %s", currentRegister, variableEntry.getPosition().getRealPosition()));
         }
     }
 
@@ -176,7 +176,7 @@ public class X86CodeGeneratorVisitor extends BaseVisitor {
                 argument.accept(this);
             }
 
-            output.println("mov %s, %s", parameter.getPosition(), currentRegister);
+            output.println("mov %s, %s", parameter.getPosition().getRealPosition(), currentRegister);
             previousRegister();
         }
         output.println("call %s", prefixIdent(callStatement.procedureName));
@@ -238,7 +238,8 @@ public class X86CodeGeneratorVisitor extends BaseVisitor {
             var parameter = procedureEntry.getParameterTypes().get(i);
             var variableEntry = (VariableEntry) symbolTable.lookup(procedureDeclaration.parameters.get(i).name);
 
-            output.println("mov %s, %s", variableEntry.getPosition(), parameter.getPosition());
+            output.println("mov %s, %s", variableEntry.getPosition().getRealPosition(),
+                    parameter.getPosition().getRealPosition());
         }
 
         for (var s : procedureDeclaration.body) {

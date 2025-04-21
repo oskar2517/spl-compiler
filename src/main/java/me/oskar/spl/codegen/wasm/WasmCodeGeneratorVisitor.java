@@ -246,7 +246,7 @@ public class WasmCodeGeneratorVisitor extends BaseVisitor {
                 output.println(";; assigning memory for local variable %s", v.name);
                 output.println("i32.const 0");
                 output.println("i32.load");
-                output.println("i32.const %s", variableEntry.getPosition());
+                output.println("i32.const %s", variableEntry.getPosition().getRealPosition());
                 output.println("i32.add");
                 output.println("local.set $%s", v.name);
                 output.println();
@@ -260,14 +260,14 @@ public class WasmCodeGeneratorVisitor extends BaseVisitor {
                 output.println(";; assigning memory for parameter %s", p.name);
                 output.println("i32.const 0");
                 output.println("i32.load");
-                output.println("i32.const %s", variableEntry.getPosition());
+                output.println("i32.const %s", variableEntry.getPosition().getRealPosition());
                 output.println("i32.add");
                 output.println("local.get $%s", p.name);
                 output.println("i32.store");
 
                 output.println("i32.const 0");
                 output.println("i32.load");
-                output.println("i32.const %s", variableEntry.getPosition());
+                output.println("i32.const %s", variableEntry.getPosition().getRealPosition());
                 output.println("i32.add");
                 output.println("local.set $%s", p.name);
                 output.println();

@@ -6,14 +6,14 @@ public class ParameterType {
 
     private final Type type;
     private final boolean reference;
-    private String position;
+    private VariablePosition position;
 
     public ParameterType(Type type, boolean reference) {
         this.type = type;
         this.reference = reference;
     }
 
-    public ParameterType(Type type, boolean reference, String position) {
+    public ParameterType(Type type, boolean reference, VariablePosition position) {
         this.type = type;
         this.reference = reference;
         this.position = position;
@@ -27,11 +27,11 @@ public class ParameterType {
         return reference;
     }
 
-    public String getPosition() {
+    public VariablePosition getPosition() {
         return position;
     }
 
-    public void setPosition(String position) {
+    public void setPosition(VariablePosition position) {
         this.position = position;
     }
 
