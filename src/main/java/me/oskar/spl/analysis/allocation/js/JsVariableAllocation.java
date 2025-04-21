@@ -2,7 +2,7 @@ package me.oskar.spl.analysis.allocation.js;
 
 import me.oskar.spl.analysis.allocation.VariableAllocation;
 import me.oskar.spl.ast.Program;
-import me.oskar.spl.codegen.Target;
+import me.oskar.spl.Target;
 import me.oskar.spl.table.SymbolTable;
 
 public class JsVariableAllocation  implements VariableAllocation {

@@ -4,7 +4,7 @@ import me.oskar.spl.ast.ProcedureDeclaration;
 import me.oskar.spl.ast.Program;
 import me.oskar.spl.ast.VariableDeclaration;
 import me.oskar.spl.ast.visitor.BaseVisitor;
-import me.oskar.spl.codegen.Target;
+import me.oskar.spl.Target;
 import me.oskar.spl.table.ProcedureEntry;
 import me.oskar.spl.table.SymbolTable;
 import me.oskar.spl.table.VariableEntry;

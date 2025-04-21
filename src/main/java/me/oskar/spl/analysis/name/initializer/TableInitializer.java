@@ -1,6 +1,6 @@
 package me.oskar.spl.analysis.name.initializer;
 
-import me.oskar.spl.codegen.Target;
+import me.oskar.spl.Target;
 import me.oskar.spl.table.SymbolTable;
 
 public interface TableInitializer {

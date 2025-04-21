@@ -1,7 +1,7 @@
 package me.oskar.spl.analysis.name;
 
 import me.oskar.spl.ast.Program;
-import me.oskar.spl.codegen.Target;
+import me.oskar.spl.Target;
 import me.oskar.spl.error.Error;
 import me.oskar.spl.table.ProcedureEntry;
 import me.oskar.spl.table.SymbolTable;

@@ -1,4 +1,4 @@
-package me.oskar.spl.codegen;
+package me.oskar.spl;
 
 import me.oskar.spl.analysis.allocation.VariableAllocation;
 import me.oskar.spl.analysis.allocation.js.JsVariableAllocation;
@@ -7,6 +7,7 @@ import me.oskar.spl.analysis.allocation.x86.X86VariableAllocation;
 import me.oskar.spl.analysis.name.initializer.TableInitializer;
 import me.oskar.spl.analysis.name.initializer.UnpositionedTableInitializer;
 import me.oskar.spl.analysis.name.initializer.X86TableInitializer;
+import me.oskar.spl.codegen.CodeGenerator;
 import me.oskar.spl.codegen.js.JsCodeGenerator;
 import me.oskar.spl.codegen.js.NodeJsCodeGenerator;
 import me.oskar.spl.codegen.wasm.WasmCodeGenerator;

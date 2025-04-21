@@ -1,7 +1,7 @@
 package me.oskar.spl.analysis.name.initializer;
 
 import me.oskar.spl.analysis.allocation.x86.RegisterPosition;
-import me.oskar.spl.codegen.Target;
+import me.oskar.spl.Target;
 import me.oskar.spl.table.ParameterType;
 import me.oskar.spl.table.ProcedureEntry;
 import me.oskar.spl.table.SymbolTable;

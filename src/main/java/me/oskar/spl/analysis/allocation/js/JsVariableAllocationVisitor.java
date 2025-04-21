@@ -2,7 +2,7 @@ package me.oskar.spl.analysis.allocation.js;
 
 import me.oskar.spl.ast.*;
 import me.oskar.spl.ast.visitor.BaseVisitor;
-import me.oskar.spl.codegen.Target;
+import me.oskar.spl.Target;
 import me.oskar.spl.table.ProcedureEntry;
 import me.oskar.spl.table.SymbolTable;
 import me.oskar.spl.table.VariableEntry;

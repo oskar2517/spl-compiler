@@ -2,7 +2,6 @@ package me.oskar.spl;
 
 import me.oskar.spl.analysis.name.NameAnalysis;
 import me.oskar.spl.analysis.semantic.SemanticAnalysis;
-import me.oskar.spl.codegen.Target;
 import me.oskar.spl.error.Error;
 import me.oskar.spl.lexer.Lexer;
 import me.oskar.spl.parser.Parser;
