@@ -15,7 +15,7 @@ public class NameAnalysis {
     }
 
     public SymbolTable buildSymbolTable(Program program, Error error, Target target, boolean headless) {
-        var globalTable = TableInitializer.initializeGlobalTable(target, headless);
+        var globalTable = target.tableInitializer.initializeGlobalTable(target, headless);
         var nameAnalysisVisitor = new NameAnalysisVisitor(globalTable, showTables, error);
         program.accept(nameAnalysisVisitor);
 
