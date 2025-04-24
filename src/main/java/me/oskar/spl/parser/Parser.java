@@ -102,7 +102,7 @@ public class Parser {
         eatToken(TokenType.TYPE, anc.add(TokenType.IDENT, TokenType.EQUAL, TokenType.ARRAY, TokenType.IDENT,
                 TokenType.SEMICOLON));
 
-        var name = currentToken.getLiteral();
+        var name = currentToken.getLexeme();
         var position = currentToken.getPosition();
         eatToken(TokenType.IDENT, anc.add(TokenType.EQUAL, TokenType.ARRAY, TokenType.IDENT, TokenType.SEMICOLON));
 
@@ -126,10 +126,10 @@ public class Parser {
 
                 int arraySize;
                 if (currentToken.getType() == TokenType.INT) {
-                    arraySize = Integer.decode(currentToken.getLiteral());
+                    arraySize = Integer.decode(currentToken.getLexeme());
                     eatToken(TokenType.INT, anc.add(TokenType.R_BRACK, TokenType.OF));
                 } else {
-                    arraySize = currentToken.getLiteral().charAt(0);
+                    arraySize = currentToken.getLexeme().charAt(0);
                     eatToken(TokenType.CHAR, anc.add(TokenType.R_BRACK, TokenType.OF));
                 }
 
@@ -141,7 +141,7 @@ public class Parser {
                 yield new ArrayTypeExpression(position, baseType, arraySize);
             }
             case IDENT -> {
-                var name = currentToken.getLiteral();
+                var name = currentToken.getLexeme();
                 eatToken(TokenType.IDENT, anc);
                 yield new NamedTypeExpression(position, name);
             }
@@ -157,7 +157,7 @@ public class Parser {
                 TokenType.VAR, TokenType.R_CURL).union(FirstRules.PARAMETER_DECLARATION_FIRST)
                 .union(FirstRules.STATEMENT_FIRST));
 
-        var procedureName = currentToken.getLiteral();
+        var procedureName = currentToken.getLexeme();
         var position = currentToken.getPosition();
         eatToken(TokenType.IDENT, anc.add(TokenType.L_PAREN, TokenType.R_PAREN, TokenType.L_CURL, TokenType.VAR,
                 TokenType.R_CURL).union(FirstRules.PARAMETER_DECLARATION_FIRST).union(FirstRules.STATEMENT_FIRST));
@@ -278,7 +278,7 @@ public class Parser {
     private Statement parseCallStatement(AnchorSet anc) {
         var position = currentToken.getPosition();
 
-        var name = currentToken.getLiteral();
+        var name = currentToken.getLexeme();
         eatToken(TokenType.IDENT, anc.add(TokenType.L_PAREN, TokenType.R_PAREN, TokenType.SEMICOLON)
                 .union(FirstRules.EXPRESSION_FIRST));
         eatToken(TokenType.L_PAREN, anc.add(TokenType.R_PAREN, TokenType.SEMICOLON)
@@ -310,7 +310,7 @@ public class Parser {
         eatToken(TokenType.VAR, anc.add(TokenType.IDENT, TokenType.COLON, TokenType.SEMICOLON)
                 .union(FirstRules.TYPE_EXPRESSION_FIRST));
 
-        var name = currentToken.getLiteral();
+        var name = currentToken.getLexeme();
         var position = currentToken.getPosition();
         eatToken(TokenType.IDENT, anc.add(TokenType.COLON, TokenType.SEMICOLON)
                 .union(FirstRules.TYPE_EXPRESSION_FIRST));
@@ -330,7 +330,7 @@ public class Parser {
             eatToken(TokenType.REF, anc.add(TokenType.IDENT, TokenType.COLON).union(FirstRules.TYPE_EXPRESSION_FIRST));
             reference = true;
         }
-        var name = currentToken.getLiteral();
+        var name = currentToken.getLexeme();
 
         eatToken(TokenType.IDENT, anc.add(TokenType.COLON).union(FirstRules.TYPE_EXPRESSION_FIRST));
         eatToken(TokenType.COLON, anc.union(FirstRules.TYPE_EXPRESSION_FIRST));
@@ -448,7 +448,7 @@ public class Parser {
             case IDENT -> new VariableExpression(token.getPosition(), parseVariable(anc));
             case INT -> {
                 try {
-                    var intLiteral = new IntLiteral(token.getPosition(), Integer.decode(token.getLiteral()));
+                    var intLiteral = new IntLiteral(token.getPosition(), Integer.decode(token.getLexeme()));
                     eatToken(TokenType.INT, anc);
 
                     yield intLiteral;
@@ -458,7 +458,7 @@ public class Parser {
                 }
             }
             case CHAR -> {
-                var charLiteral = new IntLiteral(token.getPosition(), token.getLiteral().charAt(0));
+                var charLiteral = new IntLiteral(token.getPosition(), token.getLexeme().charAt(0));
                 eatToken(TokenType.CHAR, anc);
 
                 yield charLiteral;
@@ -478,7 +478,7 @@ public class Parser {
     }
 
     private Variable parseVariable(AnchorSet anc) {
-        Variable left = new NamedVariable(currentToken.getPosition(), currentToken.getLiteral());
+        Variable left = new NamedVariable(currentToken.getPosition(), currentToken.getLexeme());
         eatToken(TokenType.IDENT, anc.add(TokenType.L_BRACK, TokenType.R_BRACK).union(FirstRules.EXPRESSION_FIRST));
 
         while (currentToken.getType() == TokenType.L_BRACK) {

@@ -86,14 +86,14 @@ public class Error {
             printErrorHead(token.getPosition(), "unexpected end of file");
         } else {
             printErrorHead(token.getPosition(), "unexpected token");
-            printCode(token.getPosition(), token.getLiteral().length(),
+            printCode(token.getPosition(), token.getLexeme().length(),
                     String.format("found `%s`, expected %s", token.getType().tokenName, expected));
         }
     }
 
     public void integerCannotBeParsed(Token token) {
         printErrorHead(token.getPosition(), "cannot parse integer");
-        printCode(token.getPosition(), token.getLiteral().length(), "exceeds 32-bit integer");
+        printCode(token.getPosition(), token.getLexeme().length(), "exceeds 32-bit integer");
     }
 
     public void redeclarationAsType(TypeDeclaration typeDeclaration) {

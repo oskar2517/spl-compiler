@@ -8,27 +8,27 @@ public class Token {
 
         @Override
         public String toString() {
-            return "(" + line + ", " + lineOffset + ")";
+            return "(%s, %s)".formatted(line, lineOffset);
         }
     }
 
-    private final String literal;
+    private final String lexeme;
     private final TokenType type;
     private final Position position;
 
-    protected Token(TokenType type, String literal, Position position) {
+    protected Token(TokenType type, String lexeme, Position position) {
         this.type = type;
-        this.literal = literal;
+        this.lexeme = lexeme;
         this.position = position;
     }
 
     @Override
     public String toString() {
-        return "(" + type + ", " + (literal.equals("\n") ? "\\n" : literal) + ", " + position + ")";
+        return "(%s. %s, %s)".formatted(type, lexeme.equals("\n") ? "\\n" : lexeme, position);
     }
 
-    public String getLiteral() {
-        return literal;
+    public String getLexeme() {
+        return lexeme;
     }
 
     public TokenType getType() {
