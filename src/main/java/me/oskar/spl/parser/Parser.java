@@ -28,7 +28,7 @@ public class Parser {
         this.error = error;
 
         nextToken();
-        program = new Program(currentToken.getSpan());
+        program = new Program(currentToken.span());
     }
 
     public Program getProgram() {
@@ -103,7 +103,7 @@ public class Parser {
     }
 
     private TypeDeclaration parseTypeDeclaration(AnchorSet anc) {
-        var startPosition = currentToken.getSpan().start();
+        var startPosition = currentToken.span().start();
 
         eatToken(TokenType.TYPE, anc.add(TokenType.IDENT, TokenType.EQUAL, TokenType.ARRAY, TokenType.IDENT,
                 TokenType.SEMICOLON));
@@ -115,16 +115,16 @@ public class Parser {
 
         var typeExpression = parseTypeExpression(anc.add(TokenType.SEMICOLON));
 
-        var endPosition = currentToken.getSpan().end();
+        var endPosition = currentToken.span().end();
 
         eatSemicolon(anc);
 
         return new TypeDeclaration(new Span(startPosition, endPosition),
-                new Identifier(name.getSpan(), name.getLexeme()), typeExpression);
+                new Identifier(name.span(), name.getLexeme()), typeExpression);
     }
 
     private TypeExpression parseTypeExpression(AnchorSet anc) {
-        var startPosition = currentToken.getSpan().start();
+        var startPosition = currentToken.span().start();
 
         return switch (currentToken.getType()) {
             case ARRAY -> {
@@ -151,17 +151,17 @@ public class Parser {
             case IDENT -> {
                 var ident = currentToken;
                 eatToken(TokenType.IDENT, anc);
-                yield new NamedTypeExpression(ident.getSpan(), new Identifier(ident.getSpan(), ident.getLexeme()));
+                yield new NamedTypeExpression(ident.span(), new Identifier(ident.span(), ident.getLexeme()));
             }
             default -> {
                 reportAndRecover(() -> error.unexpectedToken(currentToken, "type expression"), anc);
-                yield new InvalidTypeExpression(currentToken.getSpan());
+                yield new InvalidTypeExpression(currentToken.span());
             }
         };
     }
 
     private ProcedureDeclaration parseProcedureDeclaration(AnchorSet anc) {
-        var startPosition = currentToken.getSpan().start();
+        var startPosition = currentToken.span().start();
 
         eatToken(TokenType.PROC, anc.add(TokenType.IDENT, TokenType.L_PAREN, TokenType.R_PAREN, TokenType.L_CURL,
                 TokenType.VAR, TokenType.R_CURL).union(FirstRules.PARAMETER_DECLARATION_FIRST)
@@ -195,11 +195,11 @@ public class Parser {
             statements.add(statement);
         }
 
-        var endPosition = currentToken.getSpan().end();
+        var endPosition = currentToken.span().end();
         eatToken(TokenType.R_CURL, anc);
 
         return new ProcedureDeclaration(new Span(startPosition, endPosition),
-                new Identifier(procedureName.getSpan(), procedureName.getLexeme()), parameters,
+                new Identifier(procedureName.span(), procedureName.getLexeme()), parameters,
                 variableDeclarations, statements);
     }
 
@@ -235,13 +235,13 @@ public class Parser {
             }
             default -> {
                 reportAndRecover(() -> error.unexpectedToken(currentToken, "statement"), anc);
-                yield new InvalidStatement(currentToken.getSpan());
+                yield new InvalidStatement(currentToken.span());
             }
         };
     }
 
     private Statement parseIfStatement(AnchorSet anc) {
-        var startPosition = currentToken.getSpan().start();
+        var startPosition = currentToken.span().start();
 
         eatToken(TokenType.IF, anc.add(TokenType.L_PAREN, TokenType.R_PAREN).union(FirstRules.EXPRESSION_FIRST)
                 .union(FirstRules.STATEMENT_FIRST));
@@ -253,7 +253,7 @@ public class Parser {
         eatToken(TokenType.R_PAREN, anc.union(FirstRules.STATEMENT_FIRST));
 
         var consequence = parseStatement(anc);
-        Statement alternative = new EmptyStatement(currentToken.getSpan());
+        Statement alternative = new EmptyStatement(currentToken.span());
 
         if (currentToken.getType() == TokenType.ELSE) {
             eatToken(TokenType.ELSE, anc.union(FirstRules.STATEMENT_FIRST));
@@ -265,7 +265,7 @@ public class Parser {
     }
 
     private Statement parseWhileStatement(AnchorSet anc) {
-        var startPosition = currentToken.getSpan().start();
+        var startPosition = currentToken.span().start();
 
         eatToken(TokenType.WHILE, anc.add(TokenType.L_PAREN, TokenType.R_PAREN).union(FirstRules.EXPRESSION_FIRST)
                 .union(FirstRules.STATEMENT_FIRST));
@@ -282,14 +282,14 @@ public class Parser {
     }
 
     private Statement parseEmptyStatement(AnchorSet anc) {
-        var position = currentToken.getSpan();
+        var position = currentToken.span();
         eatSemicolon(anc);
 
         return new EmptyStatement(position);
     }
 
     private Statement parseCallStatement(AnchorSet anc) {
-        var startPosition = currentToken.getSpan().start();
+        var startPosition = currentToken.span().start();
 
         var name = currentToken;
         eatToken(TokenType.IDENT, anc.add(TokenType.L_PAREN, TokenType.R_PAREN, TokenType.SEMICOLON)
@@ -302,15 +302,15 @@ public class Parser {
 
         eatToken(TokenType.R_PAREN, anc.add(TokenType.SEMICOLON));
 
-        var endPosition = currentToken.getSpan().end();
+        var endPosition = currentToken.span().end();
         eatSemicolon(anc);
 
         return new CallStatement(new Span(startPosition, endPosition),
-                new Identifier(name.getSpan(), name.getLexeme()), arguments);
+                new Identifier(name.span(), name.getLexeme()), arguments);
     }
 
     private Statement parseAssignStatement(AnchorSet anc) {
-        var startPosition = currentToken.getSpan().start();
+        var startPosition = currentToken.span().start();
 
         var variable = parseVariable(anc.add(TokenType.ASSIGN, TokenType.SEMICOLON)
                 .union(FirstRules.EXPRESSION_FIRST));
@@ -319,14 +319,14 @@ public class Parser {
 
         var value = parseExpression(anc.add(TokenType.SEMICOLON));
 
-        var endPosition = currentToken.getSpan().end();
+        var endPosition = currentToken.span().end();
         eatSemicolon(anc);
 
         return new AssignStatement(new Span(startPosition, endPosition), variable, value);
     }
 
     private VariableDeclaration parseVariableDeclaration(AnchorSet anc) {
-        var startPosition = currentToken.getSpan().start();
+        var startPosition = currentToken.span().start();
 
         eatToken(TokenType.VAR, anc.add(TokenType.IDENT, TokenType.COLON, TokenType.SEMICOLON)
                 .union(FirstRules.TYPE_EXPRESSION_FIRST));
@@ -338,15 +338,15 @@ public class Parser {
 
         var type = parseTypeExpression(anc.add(TokenType.SEMICOLON));
 
-        var endPosition = currentToken.getSpan().end();
+        var endPosition = currentToken.span().end();
         eatSemicolon(anc);
 
         return new VariableDeclaration(new Span(startPosition, endPosition),
-                new Identifier(name.getSpan(), name.getLexeme()), type);
+                new Identifier(name.span(), name.getLexeme()), type);
     }
 
     private ParameterDeclaration parseParameterDeclaration(AnchorSet anc) {
-        var startPosition = currentToken.getSpan().start();
+        var startPosition = currentToken.span().start();
 
         var reference = false;
 
@@ -363,11 +363,11 @@ public class Parser {
         var type = parseTypeExpression(anc);
 
         return new ParameterDeclaration(new Span(startPosition, type.span().end()),
-                new Identifier(name.getSpan(), name.getLexeme()), type, reference);
+                new Identifier(name.span(), name.getLexeme()), type, reference);
     }
 
     private CompoundStatement parseCompoundStatement(AnchorSet anc) {
-        var startPosition = currentToken.getSpan().start();
+        var startPosition = currentToken.span().start();
 
         eatToken(TokenType.L_CURL, anc.add(TokenType.R_CURL).union(FirstRules.STATEMENT_FIRST));
         var statements = new ArrayList<Statement>();
@@ -376,7 +376,7 @@ public class Parser {
             statements.add(statement);
         }
 
-        var endPosition = currentToken.getSpan().end();
+        var endPosition = currentToken.span().end();
         eatToken(TokenType.R_CURL, anc);
 
         return new CompoundStatement(new Span(startPosition, endPosition), statements);
@@ -461,7 +461,7 @@ public class Parser {
                 eatToken(TokenType.MINUS, anc);
 
                 final var right = parseFactor(anc);
-                yield new UnaryExpression(new Span(operator.getSpan().start(), right.span().end()),
+                yield new UnaryExpression(new Span(operator.span().start(), right.span().end()),
                         UnaryExpression.Operator.NEGATE, right);
             }
             default -> parseFactor(anc);
@@ -474,21 +474,21 @@ public class Parser {
         return switch (token.getType()) {
             case IDENT -> {
                 var variable = parseVariable(anc);
-                yield new VariableExpression(new Span(token.getSpan().start(), variable.span().end()), variable);
+                yield new VariableExpression(new Span(token.span().start(), variable.span().end()), variable);
             }
             case INT -> {
                 try {
-                    var intLiteral = new IntLiteral(token.getSpan(), Integer.decode(token.getLexeme()));
+                    var intLiteral = new IntLiteral(token.span(), Integer.decode(token.getLexeme()));
                     eatToken(TokenType.INT, anc);
 
                     yield intLiteral;
                 } catch (NumberFormatException e) {
                     reportAndRecover(() -> error.integerCannotBeParsed(token), anc);
-                    yield new InvalidExpression(token.getSpan());
+                    yield new InvalidExpression(token.span());
                 }
             }
             case CHAR -> {
-                var charLiteral = new IntLiteral(token.getSpan(), token.getLexeme().charAt(0));
+                var charLiteral = new IntLiteral(token.span(), token.getLexeme().charAt(0));
                 eatToken(TokenType.CHAR, anc);
 
                 yield charLiteral;
@@ -502,16 +502,16 @@ public class Parser {
             }
             default -> {
                 reportAndRecover(() -> error.unexpectedToken(currentToken, "expression"), anc);
-                yield new InvalidExpression(token.getSpan());
+                yield new InvalidExpression(token.span());
             }
         };
     }
 
     private Variable parseVariable(AnchorSet anc) {
-        var startPosition = currentToken.getSpan().start();
+        var startPosition = currentToken.span().start();
 
-        Variable left = new NamedVariable(currentToken.getSpan(),
-                new Identifier(currentToken.getSpan(), currentToken.getLexeme()));
+        Variable left = new NamedVariable(currentToken.span(),
+                new Identifier(currentToken.span(), currentToken.getLexeme()));
         eatToken(TokenType.IDENT, anc.add(TokenType.L_BRACK, TokenType.R_BRACK).union(FirstRules.EXPRESSION_FIRST));
 
         while (currentToken.getType() == TokenType.L_BRACK) {
@@ -519,7 +519,7 @@ public class Parser {
 
             var index = parseExpression(anc.add(TokenType.R_BRACK));
 
-            var endPosition = currentToken.getSpan().end();
+            var endPosition = currentToken.span().end();
             eatToken(TokenType.R_BRACK, anc);
 
             left = new ArrayAccess(new Span(startPosition, endPosition), left, index);

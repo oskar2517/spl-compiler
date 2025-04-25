@@ -27,7 +27,7 @@ public class Token {
         return type;
     }
 
-    public Span getSpan() {
+    public Span span() {
         return span;
     }
 }

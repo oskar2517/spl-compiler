@@ -81,16 +81,16 @@ public class Error {
 
     public void unexpectedToken(Token token, String expected) {
         if (token.getType() == TokenType.EOF) {
-            printErrorHead(token.getSpan(), "unexpected end of file");
+            printErrorHead(token.span(), "unexpected end of file");
         } else {
-            printErrorHead(token.getSpan(), "unexpected token");
-            printCode(token.getSpan(), String.format("found `%s`, expected %s", token.getType().tokenName, expected));
+            printErrorHead(token.span(), "unexpected token");
+            printCode(token.span(), String.format("found `%s`, expected %s", token.getType().tokenName, expected));
         }
     }
 
     public void integerCannotBeParsed(Token token) {
-        printErrorHead(token.getSpan(), "cannot parse integer");
-        printCode(token.getSpan(), "exceeds 32-bit integer");
+        printErrorHead(token.span(), "cannot parse integer");
+        printCode(token.span(), "exceeds 32-bit integer");
     }
 
     public void redeclarationAsType(TypeDeclaration typeDeclaration) {
