@@ -1,6 +1,9 @@
 package me.oskar.spl.parser;
 
 import me.oskar.spl.ast.*;
+import me.oskar.spl.ast.invalid.InvalidExpression;
+import me.oskar.spl.ast.invalid.InvalidStatement;
+import me.oskar.spl.ast.invalid.InvalidTypeExpression;
 import me.oskar.spl.error.Error;
 import me.oskar.spl.lexer.Lexer;
 import me.oskar.spl.lexer.Token;
@@ -152,7 +155,7 @@ public class Parser {
             }
             default -> {
                 reportAndRecover(() -> error.unexpectedToken(currentToken, "type expression"), anc);
-                yield null;
+                yield new InvalidTypeExpression(currentToken.getSpan());
             }
         };
     }
@@ -232,7 +235,7 @@ public class Parser {
             }
             default -> {
                 reportAndRecover(() -> error.unexpectedToken(currentToken, "statement"), anc);
-                yield null;
+                yield new InvalidStatement(currentToken.getSpan());
             }
         };
     }
@@ -481,7 +484,7 @@ public class Parser {
                     yield intLiteral;
                 } catch (NumberFormatException e) {
                     reportAndRecover(() -> error.integerCannotBeParsed(token), anc);
-                    yield null;
+                    yield new InvalidExpression(token.getSpan());
                 }
             }
             case CHAR -> {
@@ -499,7 +502,7 @@ public class Parser {
             }
             default -> {
                 reportAndRecover(() -> error.unexpectedToken(currentToken, "expression"), anc);
-                yield null;
+                yield new InvalidExpression(token.getSpan());
             }
         };
     }
