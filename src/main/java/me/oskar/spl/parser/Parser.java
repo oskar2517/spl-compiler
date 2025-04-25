@@ -190,7 +190,8 @@ public class Parser {
         }
 
         var statements = new ArrayList<Statement>();
-        while (currentToken.getType() != TokenType.R_CURL && currentToken.getType() != TokenType.EOF) {
+
+        while (FirstRules.STATEMENT_FIRST.contains(currentToken.getType())) {
             var statement = parseStatement(anc.add(TokenType.R_CURL).union(FirstRules.STATEMENT_FIRST));
             statements.add(statement);
         }
@@ -206,14 +207,12 @@ public class Parser {
     private <T> List<T> parseNodeList(Supplier<T> nodeListFunction, TokenType endToken, AnchorSet anc) {
         var list = new ArrayList<T>();
 
-        while (currentToken.getType() != endToken && currentToken.getType() != TokenType.EOF) {
-            var element = nodeListFunction.get();
-            list.add(element);
+        if (currentToken.getType() != endToken) {
+            list.add(nodeListFunction.get());
 
-            if (lexer.peekToken().getType() == endToken && currentToken.getType() == TokenType.COMMA) { // Trailing comma
-                eatToken(TokenType.R_PAREN, anc.add(TokenType.COMMA));
-            } else if (currentToken.getType() != endToken) {
-                eatToken(TokenType.COMMA, anc.add(TokenType.COMMA));
+            while (currentToken.getType() == TokenType.COMMA) {
+                eatToken(TokenType.COMMA, anc);
+                list.add(nodeListFunction.get());
             }
         }
 
@@ -371,7 +370,7 @@ public class Parser {
 
         eatToken(TokenType.L_CURL, anc.add(TokenType.R_CURL).union(FirstRules.STATEMENT_FIRST));
         var statements = new ArrayList<Statement>();
-        while (currentToken.getType() != TokenType.R_CURL && currentToken.getType() != TokenType.EOF) {
+        while (FirstRules.STATEMENT_FIRST.contains(currentToken.getType())) {
             var statement = parseStatement(anc.add(TokenType.R_CURL).union(FirstRules.STATEMENT_FIRST));
             statements.add(statement);
         }
