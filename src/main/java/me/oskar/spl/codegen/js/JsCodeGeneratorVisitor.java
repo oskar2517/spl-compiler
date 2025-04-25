@@ -93,7 +93,7 @@ public class JsCodeGeneratorVisitor extends BaseVisitor {
     public void visit(AssignStatement assignStatement) {
         assignStatement.target.accept(this);
         if (assignStatement.target instanceof NamedVariable nv) {
-            var variableEntry = (VariableEntry) symbolTable.lookup(nv.name);
+            var variableEntry = (VariableEntry) symbolTable.lookup(nv.name.symbol);
 
             if (variableEntry.isInMemory() || variableEntry.isReference()) {
                 output.print(".value");
@@ -111,7 +111,7 @@ public class JsCodeGeneratorVisitor extends BaseVisitor {
         variableExpression.variable.accept(this);
 
         if (variableExpression.variable instanceof NamedVariable nv) {
-            var variableEntry = (VariableEntry) symbolTable.lookup(nv.name);
+            var variableEntry = (VariableEntry) symbolTable.lookup(nv.name.symbol);
 
             if (variableEntry.isInMemory() || variableEntry.isReference()) {
                 output.print(".value");
@@ -123,14 +123,14 @@ public class JsCodeGeneratorVisitor extends BaseVisitor {
 
     @Override
     public void visit(NamedVariable namedVariable) {
-        output.print(resolveNameConflict(namedVariable.name));
+        output.print(resolveNameConflict(namedVariable.name.symbol));
     }
 
     @Override
     public void visit(CallStatement callStatement) {
-        ProcedureEntry procedureEntry = (ProcedureEntry) symbolTable.lookup(callStatement.procedureName);
+        ProcedureEntry procedureEntry = (ProcedureEntry) symbolTable.lookup(callStatement.procedureName.symbol);
 
-        output.printf("await %s(", prefixIdent(callStatement.procedureName));
+        output.printf("await %s(", prefixIdent(callStatement.procedureName.symbol));
 
         for (var i = 0; i < callStatement.arguments.size(); i++) {
             Expression argument = callStatement.arguments.get(i);
@@ -251,16 +251,16 @@ public class JsCodeGeneratorVisitor extends BaseVisitor {
 
     @Override
     public void visit(ProcedureDeclaration procedureDeclaration) {
-        var procedureEntry = (ProcedureEntry) symbolTable.lookup(procedureDeclaration.name);
+        var procedureEntry = (ProcedureEntry) symbolTable.lookup(procedureDeclaration.name.symbol);
         var lastTable = symbolTable;
 
         symbolTable = procedureEntry.getLocalTable();
 
-        output.printf("async function %s(", prefixIdent(procedureDeclaration.name));
+        output.printf("async function %s(", prefixIdent(procedureDeclaration.name.symbol));
 
         for (var i = 0; i < procedureDeclaration.parameters.size(); i++) {
             var p = procedureDeclaration.parameters.get(i);
-            output.print(resolveNameConflict(p.name));
+            output.print(resolveNameConflict(p.name.symbol));
             if (i < procedureDeclaration.parameters.size() - 1) {
                 output.print(", ");
             }
@@ -269,24 +269,25 @@ public class JsCodeGeneratorVisitor extends BaseVisitor {
         output.incIndentLevel();
 
         for (var v : procedureDeclaration.variables) {
-            var variableEntry = (VariableEntry) symbolTable.lookup(v.name);
+            var variableEntry = (VariableEntry) symbolTable.lookup(v.name.symbol);
 
             if (variableEntry.getType() instanceof ArrayType at) {
-                output.printf("let %s = ", resolveNameConflict(v.name));
+                output.printf("let %s = ", resolveNameConflict(v.name.symbol));
                 generateArrayOfDimensions(at);
                 output.println(";");
             } else if (variableEntry.isInMemory()) {
-                output.println("let %s = { value: 0 };", resolveNameConflict(v.name));
+                output.println("let %s = { value: 0 };", resolveNameConflict(v.name.symbol));
             } else {
-                output.println("let %s = 0;", resolveNameConflict(v.name));
+                output.println("let %s = 0;", resolveNameConflict(v.name.symbol));
             }
         }
 
         for (var p : procedureDeclaration.parameters) {
-            var variableEntry = (VariableEntry) symbolTable.lookup(p.name);
+            var variableEntry = (VariableEntry) symbolTable.lookup(p.name.symbol);
 
             if (variableEntry.isInMemory()) {
-                output.println("%s = { value: %s };", resolveNameConflict(p.name), resolveNameConflict(p.name));
+                output.println("%s = { value: %s };", resolveNameConflict(p.name.symbol),
+                        resolveNameConflict(p.name.symbol));
             }
         }
 

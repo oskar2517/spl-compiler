@@ -1,14 +1,14 @@
 package me.oskar.spl.ast;
 
 import me.oskar.spl.ast.visitor.Visitor;
-import me.oskar.spl.lexer.Token;
+import me.oskar.spl.position.Span;
 
 public class NamedTypeExpression extends TypeExpression {
 
-    public final String name;
+    public final Identifier name;
 
-    public NamedTypeExpression(Token.Position position, String name) {
-        super(position);
+    public NamedTypeExpression(Span span, Identifier name) {
+        super(span);
 
         this.name = name;
     }

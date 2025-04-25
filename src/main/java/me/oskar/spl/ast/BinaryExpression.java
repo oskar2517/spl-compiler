@@ -1,7 +1,7 @@
 package me.oskar.spl.ast;
 
 import me.oskar.spl.ast.visitor.Visitor;
-import me.oskar.spl.lexer.Token;
+import me.oskar.spl.position.Span;
 
 public class BinaryExpression extends Expression {
 
@@ -22,8 +22,8 @@ public class BinaryExpression extends Expression {
     public final Expression leftOperand;
     public final Expression rightOperand;
 
-    public BinaryExpression(Token.Position position, Operator operator, Expression leftOperand, Expression rightOperand) {
-        super(position);
+    public BinaryExpression(Span span, Operator operator, Expression leftOperand, Expression rightOperand) {
+        super(span);
 
         this.operator = operator;
         this.leftOperand = leftOperand;

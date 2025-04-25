@@ -38,15 +38,15 @@ public class WasmCodeGeneratorVisitor extends BaseVisitor {
             assignStatement.value.accept(this);
             output.println("i32.store");
         } else if (assignStatement.target instanceof NamedVariable nv) {
-            var variableEntry = (VariableEntry) symbolTable.lookup(nv.name);
+            var variableEntry = (VariableEntry) symbolTable.lookup(nv.name.symbol);
 
             if (variableEntry.isReference() || variableEntry.isInMemory()) {
-                output.println("local.get $%s", nv.name);
+                output.println("local.get $%s", nv.name.symbol);
                 assignStatement.value.accept(this);
                 output.println("i32.store");
             } else {
                 assignStatement.value.accept(this);
-                output.println("local.set $%s", nv.name);
+                output.println("local.set $%s", nv.name.symbol);
             }
         }
     }
@@ -58,7 +58,7 @@ public class WasmCodeGeneratorVisitor extends BaseVisitor {
         if (variableExpression.variable instanceof ArrayAccess) {
             output.println("i32.load");
         } else if (variableExpression.variable instanceof NamedVariable nv) {
-            var variableEntry = (VariableEntry) symbolTable.lookup(nv.name);
+            var variableEntry = (VariableEntry) symbolTable.lookup(nv.name.symbol);
 
             if (variableEntry.isInMemory() || variableEntry.isReference()) {
                 output.println("i32.load");
@@ -68,12 +68,12 @@ public class WasmCodeGeneratorVisitor extends BaseVisitor {
 
     @Override
     public void visit(NamedVariable namedVariable) {
-        output.println("local.get $%s", namedVariable.name);
+        output.println("local.get $%s", namedVariable.name.symbol);
     }
 
     @Override
     public void visit(CallStatement callStatement) {
-        var procedureEntry = (ProcedureEntry) symbolTable.lookup(callStatement.procedureName);
+        var procedureEntry = (ProcedureEntry) symbolTable.lookup(callStatement.procedureName.symbol);
 
         for (var i = 0; i < callStatement.arguments.size(); i++) {
             Expression argument = callStatement.arguments.get(i);
@@ -86,7 +86,7 @@ public class WasmCodeGeneratorVisitor extends BaseVisitor {
             }
         }
 
-        output.println("call $%s", prefixIdent(callStatement.procedureName));
+        output.println("call $%s", prefixIdent(callStatement.procedureName.symbol));
     }
 
     @Override
@@ -208,18 +208,18 @@ public class WasmCodeGeneratorVisitor extends BaseVisitor {
 
     @Override
     public void visit(ProcedureDeclaration procedureDeclaration) {
-        var procedureEntry = (ProcedureEntry) symbolTable.lookup(procedureDeclaration.name);
+        var procedureEntry = (ProcedureEntry) symbolTable.lookup(procedureDeclaration.name.symbol);
         var lastTable = symbolTable;
 
-        output.printf("(func $%s ", prefixIdent(procedureDeclaration.name));
+        output.printf("(func $%s ", prefixIdent(procedureDeclaration.name.symbol));
         for (var p : procedureDeclaration.parameters) {
-            output.printf("(param $%s i32) ", p.name);
+            output.printf("(param $%s i32) ", p.name.symbol);
         }
         output.println();
         output.incIndentLevel();
 
         for (var v : procedureDeclaration.variables) {
-            output.println("(local $%s i32)", v.name);
+            output.println("(local $%s i32)", v.name.symbol);
         }
         output.println();
 
@@ -240,36 +240,36 @@ public class WasmCodeGeneratorVisitor extends BaseVisitor {
         symbolTable = procedureEntry.getLocalTable();
 
         for (var v : procedureDeclaration.variables) {
-            var variableEntry = (VariableEntry) symbolTable.lookup(v.name);
+            var variableEntry = (VariableEntry) symbolTable.lookup(v.name.symbol);
 
             if (variableEntry.isInMemory()) {
-                output.println(";; assigning memory for local variable %s", v.name);
+                output.println(";; assigning memory for local variable %s", v.name.symbol);
                 output.println("i32.const 0");
                 output.println("i32.load");
                 output.println("i32.const %s", variableEntry.getPosition().getRealPosition());
                 output.println("i32.add");
-                output.println("local.set $%s", v.name);
+                output.println("local.set $%s", v.name.symbol);
                 output.println();
             }
         }
 
         for (var p : procedureDeclaration.parameters) {
-            var variableEntry = (VariableEntry) symbolTable.lookup(p.name);
+            var variableEntry = (VariableEntry) symbolTable.lookup(p.name.symbol);
 
             if (variableEntry.isInMemory()) {
-                output.println(";; assigning memory for parameter %s", p.name);
+                output.println(";; assigning memory for parameter %s", p.name.symbol);
                 output.println("i32.const 0");
                 output.println("i32.load");
                 output.println("i32.const %s", variableEntry.getPosition().getRealPosition());
                 output.println("i32.add");
-                output.println("local.get $%s", p.name);
+                output.println("local.get $%s", p.name.symbol);
                 output.println("i32.store");
 
                 output.println("i32.const 0");
                 output.println("i32.load");
                 output.println("i32.const %s", variableEntry.getPosition().getRealPosition());
                 output.println("i32.add");
-                output.println("local.set $%s", p.name);
+                output.println("local.set $%s", p.name.symbol);
                 output.println();
             }
         }

@@ -3,7 +3,10 @@ package me.oskar.spl.error;
 import me.oskar.spl.ast.*;
 import me.oskar.spl.lexer.Token;
 import me.oskar.spl.lexer.TokenType;
+import me.oskar.spl.position.Span;
 import me.oskar.spl.type.Type;
+
+import java.util.List;
 
 public class Error {
 
@@ -18,11 +21,11 @@ public class Error {
     public static final String ANSI_CYAN = "\u001B[36m";
     public static final String ANSI_WHITE = "\u001B[37m";
 
-    private final String code;
+    private final List<String> code;
     private final String filename;
 
     public Error(String code, String filename) {
-        this.code = code;
+        this.code = code.lines().toList();
         this.filename = filename;
     }
 
@@ -35,211 +38,217 @@ public class Error {
         return String.format("%" + n + "s", s);
     }
 
-    private void printCode(Token.Position errorPosition, int underlineLength, String underlineMessage) {
-        var codeLines = code.lines().toList();
 
-        var codePreviewStart = Math.max(errorPosition.line() - 2, 1) - 1;
-        var codePreviewEnd = Math.min(errorPosition.line() + 2, codeLines.size());
+    private void printUnderline(int offset, int length, String underlineMessage) {
+        var s = ANSI_RED + "      " + " ".repeat(offset) + "^".repeat(length) + " " + underlineMessage + ANSI_RESET;
 
-        var lineCountWidth = String.valueOf(errorPosition.line() + 3).length();
+        System.out.println(s);
+    }
 
-        for (var i = codePreviewStart; i < codePreviewEnd; i++) {
+    private void printCode(Span span, String underlineMessage) {
+        var codePreviewStart = Math.max(span.start().line() - 2, 1);
+        var codePreviewEnd = Math.min(span.end().line() + 3, code.size());
+
+        var lineCountWidth = String.valueOf(span.end().line() + 3).length();
+
+        for (var i = codePreviewStart; i <= codePreviewEnd; i++) {
             var lineCount = padLeft(String.valueOf(i + 1), lineCountWidth);
-            var codeLine = codeLines.get(i);
+            var codeLine = code.get(i - 1);
 
             System.out.printf("   %s | %s%n", lineCount, codeLine);
 
-            if (i == errorPosition.line() - 1) {
-                var underlineString = ANSI_RED +
-                        "      " +
-                        " ".repeat(lineCountWidth) +
-                        " ".repeat(errorPosition.lineOffset());
-                if (underlineLength > -1) {
-                    underlineString += "^".repeat(underlineLength);
-                } else {
-                    underlineString += "^";
+            if (span.isMultiline()) {
+                if (i == span.start().line()) {
+                    var offset = lineCountWidth + span.start().lineOffset();
+                    printUnderline(offset, codeLine.length() - span.start().lineOffset(), "");
+                } else if (i == span.end().line()) {
+                    printUnderline(lineCountWidth, span.end().lineOffset(), underlineMessage);
+                } else if (span.includesLine(i)) {
+                    printUnderline(lineCountWidth, codeLine.length(), "");
                 }
-
-                underlineString += " " + underlineMessage + ANSI_RESET;
-
-                System.out.println(underlineString);
+            } else if (i == span.start().line()) {
+                var offset = lineCountWidth + span.start().lineOffset();
+                var length = span.end().lineOffset() - span.start().lineOffset();
+                printUnderline(offset, length, underlineMessage);
             }
         }
     }
 
-    private void printCode(Token.Position errorPosition, int underlineLength) {
-        printCode(errorPosition, underlineLength, "");
-    }
-
-    private void printErrorHead(Token.Position position, String message) {
-        System.out.printf("%s%s:%s:%s%s %serror:%s %s%n", ANSI_BOLD, filename, position.line(), position.lineOffset() + 1,
-                ANSI_RESET, ANSI_RED, ANSI_RESET, message);
-    }
-
-    public void missingSemicolon(Token token) {
-        printErrorHead(token.getPosition(), "missing semicolon");
-        printCode(token.getPosition(), -1, "expected semicolon after previous statement");
+    private void printErrorHead(Span span, String message) {
+        System.out.printf("%s%s:%s%s %serror:%s %s%n", ANSI_BOLD, filename, span.start().line(), ANSI_RESET, ANSI_RED,
+                ANSI_RESET, message);
     }
 
     public void unexpectedToken(Token token, String expected) {
         if (token.getType() == TokenType.EOF) {
-            printErrorHead(token.getPosition(), "unexpected end of file");
+            printErrorHead(token.getSpan(), "unexpected end of file");
         } else {
-            printErrorHead(token.getPosition(), "unexpected token");
-            printCode(token.getPosition(), token.getLexeme().length(),
-                    String.format("found `%s`, expected %s", token.getType().tokenName, expected));
+            printErrorHead(token.getSpan(), "unexpected token");
+            printCode(token.getSpan(), String.format("found `%s`, expected %s", token.getType().tokenName, expected));
         }
     }
 
     public void integerCannotBeParsed(Token token) {
-        printErrorHead(token.getPosition(), "cannot parse integer");
-        printCode(token.getPosition(), token.getLexeme().length(), "exceeds 32-bit integer");
+        printErrorHead(token.getSpan(), "cannot parse integer");
+        printCode(token.getSpan(), "exceeds 32-bit integer");
     }
 
     public void redeclarationAsType(TypeDeclaration typeDeclaration) {
-        printErrorHead(typeDeclaration.position, String.format("re-declaration of symbol `%s` as type", typeDeclaration.name));
-        printCode(typeDeclaration.position, typeDeclaration.name.length(), "has already been declared");
+        printErrorHead(typeDeclaration.span(), String.format("re-declaration of symbol `%s` as type",
+                typeDeclaration.name.symbol));
+        printCode(typeDeclaration.name.span(), "has already been declared");
 
         System.exit(1);
     }
 
     public void redeclarationAsParameter(ParameterDeclaration parameterDeclaration) {
-        printErrorHead(parameterDeclaration.position, String.format("re-declaration of symbol `%s` as parameter", parameterDeclaration.name));
-        printCode(parameterDeclaration.position, parameterDeclaration.name.length(), "has already been declared");
+        printErrorHead(parameterDeclaration.span(), String.format("re-declaration of symbol `%s` as parameter",
+                parameterDeclaration.name.symbol));
+        printCode(parameterDeclaration.name.span(), "has already been declared");
 
         System.exit(1);
     }
 
     public void redeclarationAsVariable(VariableDeclaration variableDeclaration) {
-        printErrorHead(variableDeclaration.position, String.format("re-declaration of symbol `%s` as variable", variableDeclaration.name));
-        printCode(variableDeclaration.position, variableDeclaration.name.length(), "has already been declared");
+        printErrorHead(variableDeclaration.span(), String.format("re-declaration of symbol `%s` as variable",
+                variableDeclaration.name.symbol));
+        printCode(variableDeclaration.name.span(), "has already been declared");
 
         System.exit(1);
     }
 
     public void redeclarationAsProcedure(ProcedureDeclaration procedureDeclaration) {
-        printErrorHead(procedureDeclaration.position, String.format("re-declaration of symbol `%s` as procedure", procedureDeclaration.name));
-        printCode(procedureDeclaration.position, procedureDeclaration.name.length(), "has already been declared");
+        printErrorHead(procedureDeclaration.span(), String.format("re-declaration of symbol `%s` as procedure",
+                procedureDeclaration.name.symbol));
+        printCode(procedureDeclaration.name.span(), "has already been declared");
 
         System.exit(1);
     }
 
     public void typeUndefined(NamedTypeExpression namedTypeExpression, String candidate) {
-        printErrorHead(namedTypeExpression.position, String.format("use of undefined symbol `%s` as type", namedTypeExpression.name));
+        printErrorHead(namedTypeExpression.name.span(), String.format("use of undefined symbol `%s` as type",
+                namedTypeExpression.name.symbol));
         if (candidate == null) {
-            printCode(namedTypeExpression.position, namedTypeExpression.name.length(), "is undefined");
+            printCode(namedTypeExpression.name.span(), "is undefined");
         } else {
-            printCode(namedTypeExpression.position, namedTypeExpression.name.length(), String.format("did you mean `%s`?", candidate));
+            printCode(namedTypeExpression.name.span(), String.format("did you mean `%s`?", candidate));
         }
 
         System.exit(1);
     }
 
     public void procedureUndefined(CallStatement callStatement, String candidate) {
-        printErrorHead(callStatement.position, String.format("call of undefined symbol `%s`", callStatement.procedureName));
+        printErrorHead(callStatement.span(), String.format("call of undefined symbol `%s`",
+                callStatement.procedureName.symbol));
         if (candidate == null) {
-            printCode(callStatement.position, callStatement.procedureName.length(), "is undefined");
+            printCode(callStatement.procedureName.span(), "is undefined");
         }else {
-            printCode(callStatement.position, callStatement.procedureName.length(), String.format("did you mean `%s`?", candidate));
+            printCode(callStatement.procedureName.span(), String.format("did you mean `%s`?", candidate));
         }
 
         System.exit(1);
     }
 
     public void callOfNonProcedure(CallStatement callStatement) {
-        printErrorHead(callStatement.position, String.format("call of non-procedure `%s`", callStatement.procedureName));
-        printCode(callStatement.position, callStatement.procedureName.length(), "is not a procedure");
+        printErrorHead(callStatement.span(), String.format("call of non-procedure `%s`",
+                callStatement.procedureName.symbol));
+        printCode(callStatement.procedureName.span(), "is not a procedure");
 
         System.exit(1);
     }
 
     public void wrongNumberOfArguments(CallStatement callStatement, int expectedArgumentsSize) {
-        printErrorHead(callStatement.position, String.format("wrong number of arguments to procedure `%s`", callStatement.procedureName));
-        printCode(callStatement.position, callStatement.procedureName.length(),
-                String.format("arguments found %s, expected %s", callStatement.arguments.size(), expectedArgumentsSize));
+        printErrorHead(callStatement.span(), String.format("wrong number of arguments to procedure `%s`",
+                callStatement.procedureName));
+        printCode(callStatement.procedureName.span(), String.format("arguments found %s, expected %s",
+                callStatement.arguments.size(), expectedArgumentsSize));
 
         System.exit(1);
     }
 
     public void argumentMustBeAVariable(CallStatement callStatement, int argument) {
-        printErrorHead(callStatement.arguments.get(argument - 1).position, String.format("argument %s to procedure `%s` must be a variable",
-                argument, callStatement.procedureName));
-        printCode(callStatement.arguments.get(argument - 1).position, -1, "expected variable");
+        printErrorHead(callStatement.arguments.get(argument - 1).span(),
+                String.format("argument %s to procedure `%s` must be a variable",
+                argument, callStatement.procedureName.symbol));
+        printCode(callStatement.arguments.get(argument - 1).span(), "expected variable");
 
         System.exit(1);
     }
 
     public void argumentTypeMismatch(CallStatement callStatement, int argument, Type expected, Type found) {
-        printErrorHead(callStatement.arguments.get(argument - 1).position, String.format("type mismatch in argument %s to procedure `%s`",
-                argument, callStatement.procedureName));
-        printCode(callStatement.arguments.get(argument - 1).position, -1, String.format("found `%s`, expected %s", found, expected));
+        printErrorHead(callStatement.arguments.get(argument - 1).span(),
+                String.format("type mismatch in argument %s to procedure `%s`", argument,
+                        callStatement.procedureName.symbol));
+        printCode(callStatement.arguments.get(argument - 1).span(),
+                String.format("found `%s`, expected `%s`", found, expected));
 
         System.exit(1);
     }
 
     public void notAType(NamedTypeExpression namedTypeExpression) {
-        printErrorHead(namedTypeExpression.position, String.format("`%s` is not a type", namedTypeExpression.name));
-        printCode(namedTypeExpression.position, namedTypeExpression.name.length(), "expected type");
+        printErrorHead(namedTypeExpression.span(), String.format("`%s` is not a type",
+                namedTypeExpression.name.symbol));
+        printCode(namedTypeExpression.span(), "expected type");
 
         System.exit(1);
     }
 
     public void mustBeReferenceParameter(ParameterDeclaration parameterDeclaration) {
-        printErrorHead(parameterDeclaration.position, String.format("parameter `%s` must be a reference parameter",
-                parameterDeclaration.name));
-        printCode(parameterDeclaration.position, parameterDeclaration.name.length(), "must be a reference parameter");
+        printErrorHead(parameterDeclaration.span(), String.format("parameter `%s` must be a reference parameter",
+                parameterDeclaration.name.symbol));
+        printCode(parameterDeclaration.name.span(), "must be a reference parameter");
 
         System.exit(1);
     }
 
     public void variableUndefined(NamedVariable namedVariable, String candidate) {
-        printErrorHead(namedVariable.position, String.format("cannot find symbol `%s` in this scope",
-                namedVariable.name));
+        printErrorHead(namedVariable.span(), String.format("cannot find symbol `%s` in this scope",
+                namedVariable.name.symbol));
         if (candidate == null) {
-            printCode(namedVariable.position, namedVariable.name.length(), "is undefined");
+            printCode(namedVariable.name.span(), "is undefined");
         } else {
-            printCode(namedVariable.position, namedVariable.name.length(), String.format("did you mean `%s`?", candidate));
+            printCode(namedVariable.name.span(), String.format("did you mean `%s`?", candidate));
         }
 
         System.exit(1);
     }
 
     public void notAVariable(NamedVariable namedVariable) {
-        printErrorHead(namedVariable.position, String.format("cannot assign to non-variable `%s`",
-                namedVariable.name));
-        printCode(namedVariable.position, namedVariable.name.length(), "is not a variable");
+        printErrorHead(namedVariable.span(), String.format("cannot assign to non-variable `%s`",
+                namedVariable.name.symbol));
+        printCode(namedVariable.name.span(), "is not a variable");
 
         System.exit(1);
     }
 
     public void indexingNonArray(ArrayAccess arrayAccess) {
-        printErrorHead(arrayAccess.position, "cannot index non-array");
-        printCode(arrayAccess.position, -1, String.format("found `%s`, expected array", arrayAccess.array.dataType));
+        printErrorHead(arrayAccess.span(), "cannot index non-array");
+        printCode(arrayAccess.span(), String.format("found `%s`, expected array", arrayAccess.array.dataType));
 
         System.exit(1);
     }
 
     public void expressionMismatchedType(Expression expression, Type expected) {
-        printErrorHead(expression.position, "mismatched types");
-        printCode(expression.position, -1, String.format("found `%s`, expected `%s`", expression.dataType, expected));
+        printErrorHead(expression.span(), "mismatched types");
+        printCode(expression.span(), String.format("found `%s`, expected `%s`", expression.dataType, expected));
 
         System.exit(1);
     }
 
     public void mainMissing() {
-        printErrorHead(Token.Position.basePosition, "main procedure is missing");
+        printErrorHead(Span.BASE_SPAN, "main procedure is missing");
 
         System.exit(1);
     }
 
     public void mainNotAProcedure() {
-        printErrorHead(Token.Position.basePosition, "symbol `main` is not a procedure");
+        printErrorHead(Span.BASE_SPAN, "symbol `main` is not a procedure");
 
         System.exit(1);
     }
 
     public void mainMustNotHaveParameters() {
-        printErrorHead(Token.Position.basePosition, "main procedure must not have any parameters");
+        printErrorHead(Span.BASE_SPAN, "main procedure must not have any parameters");
 
         System.exit(1);
     }

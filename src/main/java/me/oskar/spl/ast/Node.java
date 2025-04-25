@@ -1,7 +1,7 @@
 package me.oskar.spl.ast;
 
 import me.oskar.spl.ast.visitor.Visitable;
-import me.oskar.spl.lexer.Token;
+import me.oskar.spl.position.Span;
 
 import java.util.Arrays;
 import java.util.List;
@@ -9,10 +9,10 @@ import java.util.stream.Collectors;
 
 public abstract class Node implements Visitable {
 
-    public final Token.Position position;
+    private final Span span;
 
-    public Node(Token.Position position) {
-        this.position = position;
+    public Node(Span span) {
+        this.span = span;
     }
 
     static String formatAst(String name, Object... arguments) {
@@ -33,5 +33,9 @@ public abstract class Node implements Visitable {
         return str.lines()
                 .map(s -> " ".repeat(2) + s)
                 .collect(Collectors.joining("\n"));
+    }
+
+    public Span span() {
+        return span;
     }
 }

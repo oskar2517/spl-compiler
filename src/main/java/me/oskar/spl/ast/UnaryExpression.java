@@ -1,7 +1,7 @@
 package me.oskar.spl.ast;
 
 import me.oskar.spl.ast.visitor.Visitor;
-import me.oskar.spl.lexer.Token;
+import me.oskar.spl.position.Span;
 
 public class UnaryExpression extends Expression {
 
@@ -12,8 +12,8 @@ public class UnaryExpression extends Expression {
     public final Operator operator;
     public final Expression operand;
 
-    public UnaryExpression(Token.Position position, Operator operator, Expression operand) {
-        super(position);
+    public UnaryExpression(Span span, Operator operator, Expression operand) {
+        super(span);
 
         this.operator = operator;
         this.operand = operand;

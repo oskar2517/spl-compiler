@@ -17,6 +17,8 @@ public interface Visitor {
 
     void visit(EmptyStatement emptyStatement);
 
+    void visit(Identifier identifier);
+
     void visit(IfStatement ifStatement);
 
     void visit(IntLiteral intLiteral);

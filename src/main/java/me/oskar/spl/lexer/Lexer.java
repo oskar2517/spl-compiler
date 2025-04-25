@@ -1,5 +1,8 @@
 package me.oskar.spl.lexer;
 
+import me.oskar.spl.position.Position;
+import me.oskar.spl.position.Span;
+
 public class Lexer {
 
     private static final char EOF = '\0';
@@ -112,6 +115,10 @@ public class Lexer {
         eatComment();
     }
 
+    private Span endPosition(Position startPosition, int length) {
+        return new Span(startPosition, new Position(startPosition.line(), startPosition.lineOffset() + length));
+    }
+
     public void printTokens() {
         while (true) {
             var token = nextToken();
@@ -143,69 +150,71 @@ public class Lexer {
         eatWhitespace();
         eatComment();
 
-        var tokenPosition = new Token.Position(line, lineOffset);
+        var startPosition = new Position(line, lineOffset);
 
         return switch (currentChar) {
-            case ';' -> new Token(TokenType.SEMICOLON, ";", tokenPosition);
-            case ',' -> new Token(TokenType.COMMA, ",", tokenPosition);
-            case '(' -> new Token(TokenType.L_PAREN, "(", tokenPosition);
-            case ')' -> new Token(TokenType.R_PAREN, ")", tokenPosition);
-            case '{' -> new Token(TokenType.L_CURL, "{", tokenPosition);
-            case '}' -> new Token(TokenType.R_CURL, "}", tokenPosition);
-            case '[' -> new Token(TokenType.L_BRACK, "[", tokenPosition);
-            case ']' -> new Token(TokenType.R_BRACK, "]", tokenPosition);
-            case '+' -> new Token(TokenType.PLUS, "+", tokenPosition);
-            case '-' -> new Token(TokenType.MINUS, "-", tokenPosition);
-            case '*' -> new Token(TokenType.ASTERISK, "*", tokenPosition);
-            case '/' -> new Token(TokenType.SLASH, "/", tokenPosition);
-            case '#' -> new Token(TokenType.HASH, "#", tokenPosition);
-            case '=' -> new Token(TokenType.EQUAL, "=", tokenPosition);
+            case ';' -> new Token(TokenType.SEMICOLON, ";", endPosition(startPosition, 1));
+            case ',' -> new Token(TokenType.COMMA, ",", endPosition(startPosition, 1));
+            case '(' -> new Token(TokenType.L_PAREN, "(", endPosition(startPosition, 1));
+            case ')' -> new Token(TokenType.R_PAREN, ")", endPosition(startPosition, 1));
+            case '{' -> new Token(TokenType.L_CURL, "{", endPosition(startPosition, 1));
+            case '}' -> new Token(TokenType.R_CURL, "}", endPosition(startPosition, 1));
+            case '[' -> new Token(TokenType.L_BRACK, "[", endPosition(startPosition, 1));
+            case ']' -> new Token(TokenType.R_BRACK, "]", endPosition(startPosition, 1));
+            case '+' -> new Token(TokenType.PLUS, "+", endPosition(startPosition, 1));
+            case '-' -> new Token(TokenType.MINUS, "-", endPosition(startPosition, 1));
+            case '*' -> new Token(TokenType.ASTERISK, "*", endPosition(startPosition, 1));
+            case '/' -> new Token(TokenType.SLASH, "/", endPosition(startPosition, 1));
+            case '#' -> new Token(TokenType.HASH, "#", endPosition(startPosition, 1));
+            case '=' -> new Token(TokenType.EQUAL, "=",endPosition(startPosition, 1));
             case ':' -> {
                 if (readChar() == '=') {
                     nextChar();
-                    yield new Token(TokenType.ASSIGN, ":=", tokenPosition);
+                    yield new Token(TokenType.ASSIGN, ":=", endPosition(startPosition, 2));
                 } else {
-                    yield new Token(TokenType.COLON, ":", tokenPosition);
+                    yield new Token(TokenType.COLON, ":", endPosition(startPosition, 1));
                 }
             }
             case '<' -> {
                 if (readChar() == '=') {
                     nextChar();
-                    yield new Token(TokenType.LESS_THAN_EQUAL, "<=", tokenPosition);
+                    yield new Token(TokenType.LESS_THAN_EQUAL, "<=", endPosition(startPosition, 2));
                 } else {
-                    yield new Token(TokenType.LESS_THAN, "<", tokenPosition);
+                    yield new Token(TokenType.LESS_THAN, "<", endPosition(startPosition, 1));
                 }
             }
             case '>' -> {
                 if (readChar() == '=') {
                     nextChar();
-                    yield new Token(TokenType.GREATER_THAN_EQUAL, ">=", tokenPosition);
+                    yield new Token(TokenType.GREATER_THAN_EQUAL, ">=", endPosition(startPosition, 2));
                 } else {
-                    yield new Token(TokenType.GREATER_THAN, ">", tokenPosition);
+                    yield new Token(TokenType.GREATER_THAN, ">", endPosition(startPosition, 1));
                 }
             }
             case '\'' -> {
                 var literal = readCharLiteral();
                 if (literal == null) {
-                    yield new Token(TokenType.ILLEGAL, String.valueOf(currentChar), tokenPosition);
+                    yield new Token(TokenType.ILLEGAL, String.valueOf(currentChar), endPosition(startPosition, 3));
                 }
-                yield new Token(TokenType.CHAR, literal, tokenPosition);
+                yield new Token(TokenType.CHAR, literal, endPosition(startPosition, literal.equals("\n") ? 4 : 3));
             }
-            case EOF -> new Token(TokenType.EOF, String.valueOf(EOF), tokenPosition);
+            case EOF -> new Token(TokenType.EOF, String.valueOf(EOF), endPosition(startPosition, 0));
             default -> {
                 if (currentChar == '0' && readChar() == 'x') {
-                    yield new Token(TokenType.INT, readHexadecimalInteger(), tokenPosition);
+                    var literal = readHexadecimalInteger();
+                    yield new Token(TokenType.INT, literal, endPosition(startPosition, literal.length()));
                 } else if (Character.isDigit(currentChar)) {
-                    yield new Token(TokenType.INT, readDecimalInteger(), tokenPosition);
+                    var literal = readDecimalInteger();
+                    yield new Token(TokenType.INT, literal, endPosition(startPosition, literal.length()));
                 } else if (isAlphanumeric(currentChar)) {
                     var ident = readIdent();
                     if (Keyword.isKeyword(ident)) {
-                        yield new Token(Keyword.resolve(ident), ident, tokenPosition);
+                        yield new Token(Keyword.resolve(ident), ident, endPosition(startPosition, ident.length()));
                     } else {
-                        yield new Token(TokenType.IDENT, ident, tokenPosition);
+                        yield new Token(TokenType.IDENT, ident, endPosition(startPosition, ident.length()));
                     }
                 } else {
-                    yield new Token(TokenType.ILLEGAL, String.valueOf(currentChar), tokenPosition);
+                    yield new Token(TokenType.ILLEGAL, String.valueOf(currentChar), endPosition(startPosition, 1));
                 }
             }
         };

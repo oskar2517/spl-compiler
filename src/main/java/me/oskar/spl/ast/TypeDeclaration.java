@@ -1,14 +1,14 @@
 package me.oskar.spl.ast;
 
 import me.oskar.spl.ast.visitor.Visitor;
-import me.oskar.spl.lexer.Token;
+import me.oskar.spl.position.Span;
 
 public class TypeDeclaration extends GlobalDeclaration {
 
     public final TypeExpression typeExpression;
 
-    public TypeDeclaration(Token.Position position, String name, TypeExpression typeExpression) {
-        super(position, name);
+    public TypeDeclaration(Span span, Identifier name, TypeExpression typeExpression) {
+        super(span, name);
 
         this.typeExpression = typeExpression;
     }

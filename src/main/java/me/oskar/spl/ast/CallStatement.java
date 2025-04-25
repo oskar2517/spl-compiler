@@ -1,17 +1,17 @@
 package me.oskar.spl.ast;
 
 import me.oskar.spl.ast.visitor.Visitor;
-import me.oskar.spl.lexer.Token;
+import me.oskar.spl.position.Span;
 
 import java.util.List;
 
 public class CallStatement extends Statement {
 
-    public final String procedureName;
+    public final Identifier procedureName;
     public final List<Expression> arguments;
 
-    public CallStatement(Token.Position position, String procedureName, List<Expression> arguments) {
-        super(position);
+    public CallStatement(Span span, Identifier procedureName, List<Expression> arguments) {
+        super(span);
 
         this.procedureName = procedureName;
         this.arguments = arguments;

@@ -35,7 +35,7 @@ public class WasmVariableAllocationVisitor extends BaseVisitor {
 
     @Override
     public void visit(ProcedureDeclaration procedureDeclaration) {
-        var procEntry = (ProcedureEntry) symbolTable.lookup(procedureDeclaration.name);
+        var procEntry = (ProcedureEntry) symbolTable.lookup(procedureDeclaration.name.symbol);
         procEntry.setStackLayout(new WasmStackLayout());
         var variableAllocationVisitor = new WasmVariableAllocationVisitor(procEntry.getLocalTable(), target, procEntry);
 
@@ -50,7 +50,7 @@ public class WasmVariableAllocationVisitor extends BaseVisitor {
 
     @Override
     public void visit(VariableDeclaration variableDeclaration) {
-        var entry = (VariableEntry) symbolTable.lookup(variableDeclaration.name);
+        var entry = (VariableEntry) symbolTable.lookup(variableDeclaration.name.symbol);
         assert currentProcedure != null;
         var stackLayout = (WasmStackLayout) currentProcedure.getStackLayout();
 
@@ -64,7 +64,7 @@ public class WasmVariableAllocationVisitor extends BaseVisitor {
 
     @Override
     public void visit(CallStatement callStatement) {
-        var procedureEntry = (ProcedureEntry) symbolTable.lookup(callStatement.procedureName);
+        var procedureEntry = (ProcedureEntry) symbolTable.lookup(callStatement.procedureName.symbol);
 
         for (var i = 0; i < callStatement.arguments.size(); i++) {
             var currentArgument = callStatement.arguments.get(i);
@@ -78,7 +78,7 @@ public class WasmVariableAllocationVisitor extends BaseVisitor {
 
     @Override
     public void visit(NamedVariable namedVariable) {
-        var variableEntry = (VariableEntry) symbolTable.lookup(namedVariable.name);
+        var variableEntry = (VariableEntry) symbolTable.lookup(namedVariable.name.symbol);
         assert currentProcedure != null;
         var stackLayout = (WasmStackLayout) currentProcedure.getStackLayout();
 

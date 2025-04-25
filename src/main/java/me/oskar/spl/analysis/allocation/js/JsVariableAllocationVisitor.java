@@ -27,7 +27,7 @@ public class JsVariableAllocationVisitor extends BaseVisitor {
 
     @Override
     public void visit(ProcedureDeclaration procedureDeclaration) {
-        var procedureEntry = (ProcedureEntry) symbolTable.lookup(procedureDeclaration.name);
+        var procedureEntry = (ProcedureEntry) symbolTable.lookup(procedureDeclaration.name.symbol);
         var variableAllocationVisitor = new JsVariableAllocationVisitor(procedureEntry.getLocalTable(), target);
 
         for (var v : procedureDeclaration.variables) {
@@ -41,7 +41,7 @@ public class JsVariableAllocationVisitor extends BaseVisitor {
 
     @Override
     public void visit(VariableDeclaration variableDeclaration) {
-        var entry = (VariableEntry) symbolTable.lookup(variableDeclaration.name);
+        var entry = (VariableEntry) symbolTable.lookup(variableDeclaration.name.symbol);
 
         if (entry.getType() instanceof ArrayType) {
             entry.setInMemory(true);
@@ -50,7 +50,7 @@ public class JsVariableAllocationVisitor extends BaseVisitor {
 
     @Override
     public void visit(CallStatement callStatement) {
-        var procedureEntry = (ProcedureEntry) symbolTable.lookup(callStatement.procedureName);
+        var procedureEntry = (ProcedureEntry) symbolTable.lookup(callStatement.procedureName.symbol);
 
         for (var i = 0; i < callStatement.arguments.size(); i++) {
             var currentArgument = callStatement.arguments.get(i);
@@ -65,7 +65,7 @@ public class JsVariableAllocationVisitor extends BaseVisitor {
     // TODO: necessary?
     @Override
     public void visit(NamedVariable namedVariable) {
-        var variableEntry = (VariableEntry) symbolTable.lookup(namedVariable.name);
+        var variableEntry = (VariableEntry) symbolTable.lookup(namedVariable.name.symbol);
 
         if (!variableEntry.isInMemory() && !variableEntry.isReference()) {
             variableEntry.setInMemory(true);

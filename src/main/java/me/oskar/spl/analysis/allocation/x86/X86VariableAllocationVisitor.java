@@ -45,7 +45,7 @@ public class X86VariableAllocationVisitor extends BaseVisitor {
     }
 
     public void visit(ProcedureDeclaration procedureDeclaration) {
-        var procEntry = (ProcedureEntry) symbolTable.lookup(procedureDeclaration.name);
+        var procEntry = (ProcedureEntry) symbolTable.lookup(procedureDeclaration.name.symbol);
         var variableAllocationVisitor = new X86VariableAllocationVisitor(procEntry.getLocalTable(), target, procEntry);
         var stackLayout = new X86StackLayout();
         procEntry.setStackLayout(stackLayout);
@@ -56,7 +56,7 @@ public class X86VariableAllocationVisitor extends BaseVisitor {
 
         for (var i = 0; i < procedureDeclaration.parameters.size(); i++) {
             var variableEntry = (VariableEntry) procEntry.getLocalTable()
-                    .lookup(procedureDeclaration.parameters.get(i).name);
+                    .lookup(procedureDeclaration.parameters.get(i).name.symbol);
             var parameterType = procEntry.getParameterTypes().get(i);
 
             if (i < 6) {
@@ -85,7 +85,7 @@ public class X86VariableAllocationVisitor extends BaseVisitor {
 
     @Override
     public void visit(VariableDeclaration variableDeclaration) {
-        var entry = (VariableEntry) symbolTable.lookup(variableDeclaration.name);
+        var entry = (VariableEntry) symbolTable.lookup(variableDeclaration.name.symbol);
         assert currentProcedure != null;
         var stackLayout = (X86StackLayout) currentProcedure.getStackLayout();
 

@@ -1,15 +1,15 @@
 package me.oskar.spl.ast;
 
 import me.oskar.spl.ast.visitor.Visitor;
-import me.oskar.spl.lexer.Token;
+import me.oskar.spl.position.Span;
 
 public class VariableDeclaration extends Node {
 
-    public final String name;
+    public final Identifier name;
     public final TypeExpression typeExpression;
 
-    public VariableDeclaration(Token.Position position, String name, TypeExpression typeExpression) {
-        super(position);
+    public VariableDeclaration(Span span, Identifier name, TypeExpression typeExpression) {
+        super(span);
 
         this.name = name;
         this.typeExpression = typeExpression;

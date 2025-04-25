@@ -3,14 +3,14 @@ package me.oskar.spl.ast;
 import me.oskar.spl.ast.visitor.Visitor;
 import me.oskar.spl.position.Span;
 
-public class IntLiteral extends Expression {
+public class Identifier extends Node {
 
-    public final int value;
+    public final String symbol;
 
-    public IntLiteral(Span span, int value) {
+    public Identifier(Span span, String symbol) {
         super(span);
 
-        this.value = value;
+        this.symbol = symbol;
     }
 
     @Override
@@ -20,7 +20,6 @@ public class IntLiteral extends Expression {
 
     @Override
     public String toString() {
-        return formatAst("IntLiteral", value);
+        return formatAst("Identifier", symbol);
     }
 }
-

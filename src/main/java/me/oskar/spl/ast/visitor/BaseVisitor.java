@@ -40,6 +40,11 @@ public class BaseVisitor implements Visitor {
     }
 
     @Override
+    public void visit(Identifier identifier) {
+
+    }
+
+    @Override
     public void visit(IfStatement ifStatement) {
 
     }

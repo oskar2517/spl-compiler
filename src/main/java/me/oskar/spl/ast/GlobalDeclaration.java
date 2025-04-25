@@ -1,13 +1,13 @@
 package me.oskar.spl.ast;
 
-import me.oskar.spl.lexer.Token;
+import me.oskar.spl.position.Span;
 
 public abstract class GlobalDeclaration extends Node {
 
-    public final String name;
+    public final Identifier name;
 
-    public GlobalDeclaration(Token.Position position, String name) {
-        super(position);
+    public GlobalDeclaration(Span span, Identifier name) {
+        super(span);
 
         this.name = name;
     }

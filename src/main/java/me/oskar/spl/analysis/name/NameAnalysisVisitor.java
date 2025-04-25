@@ -39,13 +39,13 @@ public class NameAnalysisVisitor extends BaseVisitor {
     @Override
     public void visit(TypeDeclaration typeDeclaration) {
         typeDeclaration.typeExpression.accept(this);
-        currentTable.enter(typeDeclaration.name, new TypeEntry(typeDeclaration.typeExpression.dataType),
+        currentTable.enter(typeDeclaration.name.symbol, new TypeEntry(typeDeclaration.typeExpression.dataType),
                 () -> error.redeclarationAsType(typeDeclaration));
     }
 
     @Override
     public void visit(NamedTypeExpression namedTypeExpression) {
-        var typeEntry = currentTable.lookup(namedTypeExpression.name, TypeEntry.class,
+        var typeEntry = currentTable.lookup(namedTypeExpression.name.symbol, TypeEntry.class,
                 (candidate) -> error.typeUndefined(namedTypeExpression, candidate));
 
         if (!(typeEntry instanceof TypeEntry)) {
@@ -70,7 +70,7 @@ public class NameAnalysisVisitor extends BaseVisitor {
             error.mustBeReferenceParameter(parameterDeclaration);
         }
         var dataType = parameterDeclaration.typeExpression.dataType;
-        currentTable.enter(parameterDeclaration.name, new VariableEntry(dataType, parameterDeclaration.isReference),
+        currentTable.enter(parameterDeclaration.name.symbol, new VariableEntry(dataType, parameterDeclaration.isReference),
                 () -> error.redeclarationAsParameter(parameterDeclaration));
     }
 
@@ -78,7 +78,7 @@ public class NameAnalysisVisitor extends BaseVisitor {
     public void visit(VariableDeclaration variableDeclaration) {
         variableDeclaration.typeExpression.accept(this);
         var dataType = variableDeclaration.typeExpression.dataType;
-        currentTable.enter(variableDeclaration.name, new VariableEntry(dataType, false),
+        currentTable.enter(variableDeclaration.name.symbol, new VariableEntry(dataType, false),
                 () -> error.redeclarationAsVariable(variableDeclaration));
     }
 
@@ -99,11 +99,11 @@ public class NameAnalysisVisitor extends BaseVisitor {
 
         var procedureEntry = new ProcedureEntry(localTable, parameterTypes);
 
-        currentTable.enter(procedureDeclaration.name, procedureEntry,
+        currentTable.enter(procedureDeclaration.name.symbol, procedureEntry,
                 () -> error.redeclarationAsProcedure(procedureDeclaration));
 
         if (showTables) {
-            NameAnalysis.printSymbolTableAtEndOfProcedure(procedureDeclaration.name, procedureEntry);
+            NameAnalysis.printSymbolTableAtEndOfProcedure(procedureDeclaration.name.symbol, procedureEntry);
         }
     }
 }

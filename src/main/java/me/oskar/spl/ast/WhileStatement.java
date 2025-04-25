@@ -1,15 +1,15 @@
 package me.oskar.spl.ast;
 
 import me.oskar.spl.ast.visitor.Visitor;
-import me.oskar.spl.lexer.Token;
+import me.oskar.spl.position.Span;
 
 public class WhileStatement extends Statement {
 
     public final Expression condition;
     public final Statement body;
 
-    public WhileStatement(Token.Position position, Expression condition, Statement body) {
-        super(position);
+    public WhileStatement(Span span, Expression condition, Statement body) {
+        super(span);
 
         this.condition = condition;
         this.body = body;

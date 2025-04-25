@@ -32,7 +32,7 @@ public class SemanticAnalysisVisitor extends BaseVisitor {
 
     @Override
     public void visit(ProcedureDeclaration procedureDeclaration) {
-        var procEntry = (ProcedureEntry) symbolTable.lookup(procedureDeclaration.name);
+        var procEntry = (ProcedureEntry) symbolTable.lookup(procedureDeclaration.name.symbol);
         var semanticAnalysisVisitor = new SemanticAnalysisVisitor(procEntry.getLocalTable(), error, target);
 
         for (var s : procedureDeclaration.body) {
@@ -76,7 +76,7 @@ public class SemanticAnalysisVisitor extends BaseVisitor {
 
     @Override
     public void visit(NamedVariable namedVariable) {
-        var entry = symbolTable.lookup(namedVariable.name, VariableEntry.class,
+        var entry = symbolTable.lookup(namedVariable.name.symbol, VariableEntry.class,
                 (candidate) -> error.variableUndefined(namedVariable, candidate));
 
         if (!(entry instanceof VariableEntry)) {
@@ -158,7 +158,7 @@ public class SemanticAnalysisVisitor extends BaseVisitor {
 
     @Override
     public void visit(CallStatement callStatement) {
-        var entry = symbolTable.lookup(callStatement.procedureName, ProcedureEntry.class,
+        var entry = symbolTable.lookup(callStatement.procedureName.symbol, ProcedureEntry.class,
                 (candidate) -> error.procedureUndefined(callStatement, candidate));
 
         if (!(entry instanceof ProcedureEntry procEntry)) {

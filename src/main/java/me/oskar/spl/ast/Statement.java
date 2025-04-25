@@ -1,10 +1,10 @@
 package me.oskar.spl.ast;
 
-import me.oskar.spl.lexer.Token;
+import me.oskar.spl.position.Span;
 
 public abstract class Statement extends Node {
 
-    public Statement(Token.Position position) {
-        super(position);
+    public Statement(Span span) {
+        super(span);
     }
 }

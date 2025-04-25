@@ -44,7 +44,7 @@ public class OutgoingAreaSizeVisitor extends BaseVisitor {
 
     @Override
     public void visit(CallStatement callStatement) {
-        var procedureEntry = (ProcedureEntry) symbolTable.lookup(callStatement.procedureName);
+        var procedureEntry = (ProcedureEntry) symbolTable.lookup(callStatement.procedureName.symbol);
 
         var argumentsSize = 0;
 

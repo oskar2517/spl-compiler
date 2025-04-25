@@ -92,7 +92,7 @@ public class X86CodeGeneratorVisitor extends BaseVisitor {
 
     @Override
     public void visit(NamedVariable namedVariable) {
-        var variableEntry = (VariableEntry) symbolTable.lookup(namedVariable.name);
+        var variableEntry = (VariableEntry) symbolTable.lookup(namedVariable.name.symbol);
 
         nextRegister();
         if (variableEntry.isReference()) {
@@ -165,7 +165,7 @@ public class X86CodeGeneratorVisitor extends BaseVisitor {
 
     @Override
     public void visit(CallStatement callStatement) {
-        var procedureEntry = (ProcedureEntry) symbolTable.lookup(callStatement.procedureName);
+        var procedureEntry = (ProcedureEntry) symbolTable.lookup(callStatement.procedureName.symbol);
 
         var argumentsReversed = callStatement.arguments.reversed();
         var parameterTypesReversed = procedureEntry.getParameterTypes().reversed();
@@ -184,7 +184,7 @@ public class X86CodeGeneratorVisitor extends BaseVisitor {
             output.println("mov %s, %s", parameter.getPosition().getRealPosition(), currentRegister);
             previousRegister();
         }
-        output.println("call %s", prefixIdent(callStatement.procedureName));
+        output.println("call %s", prefixIdent(callStatement.procedureName.symbol));
     }
 
     @Override
@@ -215,10 +215,10 @@ public class X86CodeGeneratorVisitor extends BaseVisitor {
 
     @Override
     public void visit(ProcedureDeclaration procedureDeclaration) {
-        var procedureEntry = (ProcedureEntry) symbolTable.lookup(procedureDeclaration.name);
+        var procedureEntry = (ProcedureEntry) symbolTable.lookup(procedureDeclaration.name.symbol);
         var lastTable = symbolTable;
 
-        output.println("%s:", prefixIdent(procedureDeclaration.name));
+        output.println("%s:", prefixIdent(procedureDeclaration.name.symbol));
         output.incIndentLevel();
         output.println("; Allocate stack frame");
         output.println("push rbp");
@@ -241,7 +241,7 @@ public class X86CodeGeneratorVisitor extends BaseVisitor {
             if (i >= procedureEntry.getParameterTypes().size()) break;
 
             var parameter = procedureEntry.getParameterTypes().get(i);
-            var variableEntry = (VariableEntry) symbolTable.lookup(procedureDeclaration.parameters.get(i).name);
+            var variableEntry = (VariableEntry) symbolTable.lookup(procedureDeclaration.parameters.get(i).name.symbol);
 
             output.println("mov %s, %s", variableEntry.getPosition().getRealPosition(),
                     parameter.getPosition().getRealPosition());
