@@ -52,7 +52,7 @@ public class Error {
         var lineCountWidth = String.valueOf(span.end().line() + 3).length();
 
         for (var i = codePreviewStart; i <= codePreviewEnd; i++) {
-            var lineCount = padLeft(String.valueOf(i + 1), lineCountWidth);
+            var lineCount = padLeft(String.valueOf(i), lineCountWidth);
             var codeLine = code.get(i - 1);
 
             System.out.printf("   %s | %s%n", lineCount, codeLine);
