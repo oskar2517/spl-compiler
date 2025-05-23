@@ -34,10 +34,5 @@ public class BinaryExpression extends Expression {
     public void accept(Visitor visitor) {
         visitor.visit(this);
     }
-
-    @Override
-    public String toString() {
-        return formatAst("BinaryExpression", operator, leftOperand, rightOperand);
-    }
 }
 

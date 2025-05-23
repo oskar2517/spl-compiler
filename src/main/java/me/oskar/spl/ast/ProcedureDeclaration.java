@@ -24,14 +24,4 @@ public class ProcedureDeclaration extends GlobalDeclaration {
     public void accept(Visitor visitor) {
         visitor.visit(this);
     }
-
-    @Override
-    public String toString() {
-        return formatAst("ProcedureDeclaration",
-                name,
-                formatAst("Parameters", parameters.toArray()),
-                formatAst("Variables", variables.toArray()),
-                formatAst("Body", body.toArray())
-        );
-    }
 }

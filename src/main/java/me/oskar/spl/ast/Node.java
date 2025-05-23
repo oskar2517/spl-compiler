@@ -3,11 +3,21 @@ package me.oskar.spl.ast;
 import me.oskar.spl.ast.visitor.Visitable;
 import me.oskar.spl.position.Span;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public abstract class Node implements Visitable {
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.FIELD)
+    public @interface NoProperty {
+    }
 
     private final Span span;
 
@@ -15,7 +25,25 @@ public abstract class Node implements Visitable {
         this.span = span;
     }
 
-    static String formatAst(String name, Object... arguments) {
+    @Override
+    public String toString() {
+        var fields = new ArrayList<>();
+
+        for (var field : this.getClass().getDeclaredFields()) {
+            field.setAccessible(true);
+
+            if (!field.isAnnotationPresent(NoProperty.class)) {
+                try {
+                    fields.add(field.get(this));
+                } catch (IllegalAccessException ignored) {
+                }
+            }
+        }
+
+        return formatAst(this.getClass().getSimpleName(), fields);
+    }
+
+    private static String formatAst(String name, Object... arguments) {
         return formatAst(name, Arrays.stream(arguments).map(o -> o == null ? "NULL" : o.toString()).collect(Collectors.toList()));
     }
 

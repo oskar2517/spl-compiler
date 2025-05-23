@@ -17,10 +17,5 @@ public class TypeDeclaration extends GlobalDeclaration {
     public void accept(Visitor visitor) {
         visitor.visit(this);
     }
-
-    @Override
-    public String toString() {
-        return formatAst("TypeDeclaration", name, typeExpression);
-    }
 }
 

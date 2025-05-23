@@ -28,6 +28,9 @@ public class Main implements Callable<Integer> {
     @Option(names = {"--headless"}, description = "Disable rendering procedures.")
     private boolean headless;
 
+    @Option(names = "--ast", description = "Prints the abstract syntax tree generated from the input file.")
+    private boolean ast;
+
     @Override
     public Integer call() throws Exception {
         if (output == null) {
@@ -49,6 +52,11 @@ public class Main implements Callable<Integer> {
         var parser = new Parser(lexer, error);
         parser.generateAst();
         var program = parser.getProgram();
+
+        if (ast) {
+            System.out.println(program);
+            System.exit(0);
+        }
 
         var nameAnalysis = new NameAnalysis(false);
         var globalTable = nameAnalysis.buildSymbolTable(program, error, target, headless);
