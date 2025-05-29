@@ -47,8 +47,7 @@ public class Main implements Callable<Integer> {
         var lexer = new Lexer(code);
 
         var parser = new Parser(lexer, error);
-        parser.generateAst();
-        var program = parser.getProgram();
+        var program = parser.parse();
 
         var nameAnalysis = new NameAnalysis(false);
         var globalTable = nameAnalysis.buildSymbolTable(program, error, target, headless);

@@ -31,10 +31,6 @@ public class Parser {
         program = new Program(currentToken.span());
     }
 
-    public Program getProgram() {
-        return program;
-    }
-
     private void nextToken() {
         currentToken = lexer.nextToken();
     }
@@ -81,7 +77,7 @@ public class Parser {
         expectToken(type, String.format("`%s`", type.tokenName), anc);
     }
 
-    public void generateAst() {
+    public Program parse() {
         var anc = AnchorSet.of(TokenType.EOF);
 
         while (currentToken.getType() != TokenType.EOF) {
@@ -91,6 +87,8 @@ public class Parser {
         if (panic) {
             System.exit(1);
         }
+
+        return program;
     }
 
     private void parseGlobal(AnchorSet anc) {
