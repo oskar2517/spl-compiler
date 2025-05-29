@@ -7,6 +7,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,6 +20,7 @@ public abstract class Node implements Visitable {
     public @interface NoProperty {
     }
 
+    @Node.NoProperty
     private final Span span;
 
     public Node(Span span) {
@@ -27,20 +29,22 @@ public abstract class Node implements Visitable {
 
     @Override
     public String toString() {
-        var fields = new ArrayList<>();
+        var properties = new ArrayList<>();
+        Class<?> clazz = this.getClass();
 
-        for (var field : this.getClass().getDeclaredFields()) {
-            field.setAccessible(true);
-
-            if (!field.isAnnotationPresent(NoProperty.class)) {
+        while (clazz != null && clazz != Node.class) {
+            var declaredFields = clazz.getDeclaredFields();
+            for (var f : declaredFields) {
                 try {
-                    fields.add(field.get(this));
+                    properties.addFirst(f.get(this));
                 } catch (IllegalAccessException ignored) {
                 }
             }
+
+            clazz = clazz.getSuperclass();
         }
 
-        return formatAst(this.getClass().getSimpleName(), fields);
+        return formatAst(this.getClass().getSimpleName(), properties);
     }
 
     private static String formatAst(String name, Object... arguments) {
