@@ -17,10 +17,5 @@ public class NamedTypeExpression extends TypeExpression {
     public void accept(Visitor visitor) {
         visitor.visit(this);
     }
-
-    @Override
-    public String toString() {
-        return formatAst("NamedTypeExpression", name);
-    }
 }
 

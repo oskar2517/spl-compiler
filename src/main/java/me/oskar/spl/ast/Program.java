@@ -22,10 +22,5 @@ public class Program extends Node {
     public void accept(Visitor visitor) {
         visitor.visit(this);
     }
-
-    @Override
-    public String toString() {
-        return formatAst("Program", declarations.toArray());
-    }
 }
 

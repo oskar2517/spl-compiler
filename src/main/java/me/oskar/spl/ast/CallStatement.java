@@ -21,9 +21,4 @@ public class CallStatement extends Statement {
     public void accept(Visitor visitor) {
         visitor.visit(this);
     }
-
-    @Override
-    public String toString() {
-        return formatAst("CallStatement", procedureName, formatAst("Arguments", arguments.toArray()));
-    }
 }

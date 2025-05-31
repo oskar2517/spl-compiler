@@ -19,10 +19,5 @@ public class ArrayTypeExpression extends TypeExpression {
     public void accept(Visitor visitor) {
         visitor.visit(this);
     }
-
-    @Override
-    public String toString() {
-        return formatAst("ArrayTypeExpression", baseType, arraySize);
-    }
 }
 

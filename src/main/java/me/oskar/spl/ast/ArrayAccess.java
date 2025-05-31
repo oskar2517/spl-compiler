@@ -19,10 +19,5 @@ public class ArrayAccess extends Variable {
     public void accept(Visitor visitor) {
         visitor.visit(this);
     }
-
-    @Override
-    public String toString() {
-        return formatAst("ArrayAccess", array, index);
-    }
 }
 

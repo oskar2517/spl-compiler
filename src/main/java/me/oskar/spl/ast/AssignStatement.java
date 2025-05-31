@@ -19,9 +19,4 @@ public class AssignStatement extends Statement {
     public void accept(Visitor visitor) {
         visitor.visit(this);
     }
-
-    @Override
-    public String toString() {
-        return formatAst("AssignStatement", target, value);
-    }
 }

@@ -5,6 +5,7 @@ import me.oskar.spl.type.Type;
 
 public abstract class Variable extends Node {
 
+    @Node.NoProperty
     public Type dataType = null;
 
     public Variable(Span span) {
