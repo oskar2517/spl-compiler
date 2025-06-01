@@ -40,8 +40,10 @@ is marked as executable).
 
 ## CLI usage
 ```
-Usage: splc [-hV] [--headless] [-o=<output>] -t=<target> <input>
+Usage: splc [-hV] [--ast] [--headless] [-o=<output>] -t=<target> <input>
       <input>             Source code file to compile.
+      --ast               Prints the abstract syntax tree generated from the
+                            input file.
   -h, --help              Show this help message and exit.
       --headless          Disable rendering procedures.
   -o, --output=<output>   File to write output to.
