@@ -8,14 +8,12 @@ import java.util.List;
 
 public class Program extends Node {
 
-    public final List<GlobalDeclaration> declarations = new ArrayList<>();
+    public final List<GlobalDeclaration> declarations;
 
-    public Program(Span span) {
+    public Program(Span span, List<GlobalDeclaration> declarations) {
         super(span);
-    }
 
-    public void addGlobalDeclaration(GlobalDeclaration globalDeclaration) {
-        declarations.add(globalDeclaration);
+        this.declarations = declarations;
     }
 
     @Override

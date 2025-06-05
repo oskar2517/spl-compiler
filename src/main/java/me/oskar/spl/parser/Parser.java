@@ -2,6 +2,7 @@ package me.oskar.spl.parser;
 
 import me.oskar.spl.ast.*;
 import me.oskar.spl.ast.invalid.InvalidExpression;
+import me.oskar.spl.ast.invalid.InvalidGlobalDeclaration;
 import me.oskar.spl.ast.invalid.InvalidStatement;
 import me.oskar.spl.ast.invalid.InvalidTypeExpression;
 import me.oskar.spl.error.Error;
@@ -19,7 +20,6 @@ public class Parser {
     private final Lexer lexer;
     private final Error error;
     private Token currentToken;
-    private final Program program;
     private boolean errorMode = false;
     private boolean panic = false;
 
@@ -28,7 +28,6 @@ public class Parser {
         this.error = error;
 
         nextToken();
-        program = new Program(currentToken.span());
     }
 
     private void nextToken() {
@@ -78,26 +77,33 @@ public class Parser {
     }
 
     public Program parse() {
+        var startPosition = currentToken.span().start();
         var anc = AnchorSet.of(TokenType.EOF);
 
+        var declarations = new ArrayList<GlobalDeclaration>();
+
         while (currentToken.getType() != TokenType.EOF) {
-            parseGlobal(anc.union(FirstRules.GLOBAL_DECLARATION_FIRST));
+            var d = parseGlobal(anc.union(FirstRules.GLOBAL_DECLARATION_FIRST));
+            declarations.add(d);
         }
 
         if (panic) {
             System.exit(1);
         }
 
-        return program;
+        return new Program(new Span(startPosition, currentToken.span().end()), declarations);
     }
 
-    private void parseGlobal(AnchorSet anc) {
-        switch (currentToken.getType()) {
-            case TYPE -> program.addGlobalDeclaration(parseTypeDeclaration(anc));
-            case PROC -> program.addGlobalDeclaration(parseProcedureDeclaration(anc));
-            default -> reportAndRecover(() -> error.unexpectedToken(currentToken,
+    private GlobalDeclaration parseGlobal(AnchorSet anc) {
+        return switch (currentToken.getType()) {
+            case TYPE -> parseTypeDeclaration(anc);
+            case PROC -> parseProcedureDeclaration(anc);
+            default -> {
+                reportAndRecover(() -> error.unexpectedToken(currentToken,
                     "type declaration or procedure declaration"), anc);
-        }
+                yield new InvalidGlobalDeclaration(currentToken.span());
+            }
+        };
     }
 
     private TypeDeclaration parseTypeDeclaration(AnchorSet anc) {
