@@ -1,10 +1,6 @@
 package me.oskar.spl.parser;
 
 import me.oskar.spl.ast.*;
-import me.oskar.spl.ast.invalid.InvalidExpression;
-import me.oskar.spl.ast.invalid.InvalidGlobalDeclaration;
-import me.oskar.spl.ast.invalid.InvalidStatement;
-import me.oskar.spl.ast.invalid.InvalidTypeExpression;
 import me.oskar.spl.error.Error;
 import me.oskar.spl.lexer.Lexer;
 import me.oskar.spl.lexer.Token;
@@ -101,7 +97,7 @@ public class Parser {
             default -> {
                 reportAndRecover(() -> error.unexpectedToken(currentToken,
                     "type declaration or procedure declaration"), anc);
-                yield new InvalidGlobalDeclaration(currentToken.span());
+                yield new GlobalDeclaration.Invalid(currentToken.span());
             }
         };
     }
@@ -159,7 +155,7 @@ public class Parser {
             }
             default -> {
                 reportAndRecover(() -> error.unexpectedToken(currentToken, "type expression"), anc);
-                yield new InvalidTypeExpression(currentToken.span());
+                yield new TypeExpression.Invalid(currentToken.span());
             }
         };
     }
@@ -238,7 +234,7 @@ public class Parser {
             }
             default -> {
                 reportAndRecover(() -> error.unexpectedToken(currentToken, "statement"), anc);
-                yield new InvalidStatement(currentToken.span());
+                yield new Statement.Invalid(currentToken.span());
             }
         };
     }
@@ -487,7 +483,7 @@ public class Parser {
                     yield intLiteral;
                 } catch (NumberFormatException e) {
                     reportAndRecover(() -> error.integerCannotBeParsed(token), anc);
-                    yield new InvalidExpression(token.span());
+                    yield new Expression.Invalid(token.span());
                 }
             }
             case CHAR -> {
@@ -505,7 +501,7 @@ public class Parser {
             }
             default -> {
                 reportAndRecover(() -> error.unexpectedToken(currentToken, "expression"), anc);
-                yield new InvalidExpression(token.span());
+                yield new Expression.Invalid(token.span());
             }
         };
     }
