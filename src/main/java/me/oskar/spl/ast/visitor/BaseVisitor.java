@@ -2,7 +2,7 @@ package me.oskar.spl.ast.visitor;
 
 import me.oskar.spl.ast.*;
 
-public class BaseVisitor implements Visitor {
+public abstract class BaseVisitor implements Visitor {
 
     @Override
     public void visit(ArrayAccess arrayAccess) {
