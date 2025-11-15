@@ -33,7 +33,7 @@ public enum TokenType {
     GREATER_THAN(">"),
     GREATER_THAN_EQUAL(">="),
     PLUS("+"),
-    MINUS("#"),
+    MINUS("-"),
     ASTERISK("*"),
     SLASH("/"),
 
