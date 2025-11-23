@@ -31,6 +31,9 @@ public class Main implements Callable<Integer> {
     @Option(names = "--ast", description = "Prints the abstract syntax tree generated from the input file.")
     private boolean ast;
 
+    @Option(names = "--tables", description = "Prints symbol tables generated during name analysis.")
+    private boolean tables;
+
     @Override
     public Integer call() throws Exception {
         if (output == null) {
@@ -57,7 +60,7 @@ public class Main implements Callable<Integer> {
             System.exit(0);
         }
 
-        var nameAnalysis = new NameAnalysis(false);
+        var nameAnalysis = new NameAnalysis(tables);
         var globalTable = nameAnalysis.buildSymbolTable(program, error, target, headless);
 
         var semanticAnalysis = new SemanticAnalysis();
