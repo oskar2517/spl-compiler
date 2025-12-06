@@ -17,7 +17,9 @@ public class X86CodeGenerator implements CodeGenerator {
         output.println("section .text");
         output.incIndentLevel();
         output.println("global main");
+        output.decIndentLevel();
         output.println();
+        output.incIndentLevel();
         output.println("extern printf");
         output.println("extern exit");
         output.println("extern __init_time");
@@ -35,8 +37,8 @@ public class X86CodeGenerator implements CodeGenerator {
             }
         }
 
-        output.println();
         output.decIndentLevel();
+        output.println();
 
         output.println("__arrayAccessOutOfBounds:");
         output.incIndentLevel();
@@ -52,7 +54,9 @@ public class X86CodeGenerator implements CodeGenerator {
         output.incIndentLevel();
         output.println("push rbp");
         output.println("mov rbp, rsp");
+        output.decIndentLevel();
         output.println();
+        output.incIndentLevel();
         output.println("call __init_time");
         if (!headless) {
             output.println("call __sdl_init_screen");
@@ -61,7 +65,9 @@ public class X86CodeGenerator implements CodeGenerator {
         if (!headless) {
             output.println("call __sdl_event_loop");
         }
+        output.decIndentLevel();
         output.println();
+        output.incIndentLevel();
         output.println("mov rdi, 0");
         output.println("call exit");
         output.println("pop rbp");
@@ -72,7 +78,6 @@ public class X86CodeGenerator implements CodeGenerator {
         var codeGenerator = new X86CodeGeneratorVisitor(symbolTable, output);
         program.accept(codeGenerator);
 
-        output.println();
         output.println("section .data");
         output.incIndentLevel();
         output.println("array_oob_error: db \"error: array access out of bounds\",10,0");

@@ -224,7 +224,9 @@ public class X86CodeGeneratorVisitor extends BaseVisitor {
         output.println("push rbp");
         output.println("mov rbp, rsp");
         output.println("sub rsp, %s", procedureEntry.getStackLayout().getFrameSize());
+        output.decIndentLevel();
         output.println();
+        output.incIndentLevel();
 
         output.println("; Backup callee-saved registers");
         output.println("push rbx");
@@ -232,8 +234,14 @@ public class X86CodeGeneratorVisitor extends BaseVisitor {
         output.println("push r13");
         output.println("push r14");
         output.println("push r15");
-        output.println("sub rsp, 8 ; Align stack");
+        output.decIndentLevel();
         output.println();
+        output.incIndentLevel();
+        output.println("; Align stack");
+        output.println("sub rsp, 8");
+        output.decIndentLevel();
+        output.println();
+        output.incIndentLevel();
 
         symbolTable = procedureEntry.getLocalTable();
 
@@ -253,16 +261,24 @@ public class X86CodeGeneratorVisitor extends BaseVisitor {
 
         symbolTable = lastTable;
 
+        output.decIndentLevel();
         output.println();
+        output.incIndentLevel();
         output.println("; Restore callee-saved registers");
         output.println("pop r15");
         output.println("pop r14");
         output.println("pop r13");
         output.println("pop r12");
         output.println("pop rbx");
-        output.println("add rsp, 8 ; Align stack");
-
+        output.decIndentLevel();
         output.println();
+        output.incIndentLevel();
+        output.println("; Align stack");
+        output.println("add rsp, 8");
+
+        output.decIndentLevel();
+        output.println();
+        output.incIndentLevel();
         output.println("; Destroy stack frame");
         output.println("mov rsp, rbp");
         output.println("pop rbp");

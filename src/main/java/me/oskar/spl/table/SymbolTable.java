@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 public class SymbolTable {
 
-    private final Map<String, SymbolTableEntry> entries = new HashMap<>();
+    private final Map<String, SymbolTableEntry> entries = new LinkedHashMap<>();
     private final SymbolTable parentTable;
 
     public SymbolTable(SymbolTable parentTable) {
