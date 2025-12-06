@@ -82,5 +82,7 @@ public class X86CodeGenerator implements CodeGenerator {
         output.incIndentLevel();
         output.println("array_oob_error: db \"error: array access out of bounds\",10,0");
         output.decIndentLevel();
+        output.println();
+        output.println("section .note.GNU-stack noalloc noexec nowrite progbits");
     }
 }
