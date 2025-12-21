@@ -69,7 +69,7 @@ public class Main implements Callable<Integer> {
         target.variableAllocation.allocateVariables(program, globalTable, target);
 
         var writer = new PrintWriter(new FileWriter(output));
-        target.codeGenerator.generateCode(program, globalTable, writer, headless);
+        target.codeGenerator.generateCode(program, globalTable, writer, target, headless);
         writer.flush();
 
         return 0;

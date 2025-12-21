@@ -7,9 +7,11 @@ import me.oskar.spl.analysis.allocation.x86.X86VariableAllocation;
 import me.oskar.spl.analysis.name.initializer.TableInitializer;
 import me.oskar.spl.analysis.name.initializer.UnpositionedTableInitializer;
 import me.oskar.spl.analysis.name.initializer.X86TableInitializer;
+import me.oskar.spl.ast.visitor.BaseVisitor;
 import me.oskar.spl.codegen.CodeGenerator;
 import me.oskar.spl.codegen.js.JsCodeGenerator;
 import me.oskar.spl.codegen.js.NodeJsCodeGenerator;
+import me.oskar.spl.codegen.llvm.LLVMCodeGenerator;
 import me.oskar.spl.codegen.wasm.WasmCodeGenerator;
 import me.oskar.spl.codegen.x86.X86CodeGenerator;
 import me.oskar.spl.type.PrimitiveType;
@@ -20,7 +22,8 @@ public enum Target {
     JS("js", new JsCodeGenerator(), new JsVariableAllocation(), new UnpositionedTableInitializer(), 0),
     NODEJS("js", new NodeJsCodeGenerator(), new JsVariableAllocation(), new UnpositionedTableInitializer(), 0),
     WASM("wat", new WasmCodeGenerator(), new WasmVariableAllocation(), new UnpositionedTableInitializer(), 4),
-    X86("nasm", new X86CodeGenerator(), new X86VariableAllocation(), new X86TableInitializer(), 8);
+    X86("nasm", new X86CodeGenerator(), new X86VariableAllocation(), new X86TableInitializer(), 8),
+    LLVM("ll", new LLVMCodeGenerator(), new VariableAllocation.Unallocated(), new UnpositionedTableInitializer(), 8);
 
     public final String extension;
     public final CodeGenerator codeGenerator;

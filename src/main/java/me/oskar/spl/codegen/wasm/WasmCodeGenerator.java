@@ -1,5 +1,6 @@
 package me.oskar.spl.codegen.wasm;
 
+import me.oskar.spl.Target;
 import me.oskar.spl.ast.Program;
 import me.oskar.spl.codegen.CodeGenerator;
 import me.oskar.spl.codegen.CodePrinter;
@@ -11,7 +12,8 @@ import java.io.PrintWriter;
 public class WasmCodeGenerator implements CodeGenerator {
 
     @Override
-    public void generateCode(Program program, SymbolTable table, PrintWriter printWriter, boolean headless) {
+    public void generateCode(Program program, SymbolTable table, PrintWriter printWriter, Target target,
+                             boolean headless) {
         var output = new CodePrinter(printWriter, 4);
 
         output.println("(module");

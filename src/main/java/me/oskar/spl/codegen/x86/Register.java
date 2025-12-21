@@ -2,7 +2,7 @@ package me.oskar.spl.codegen.x86;
 
 import me.oskar.spl.error.Error;
 
-public class Register {
+class Register {
 
     private final int index;
     private static final String[] registers = new String[] {"r10", "r11", "r12", "r13", "r14", "r15", "rbx"};
