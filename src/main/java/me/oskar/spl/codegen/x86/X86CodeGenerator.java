@@ -3,6 +3,7 @@ package me.oskar.spl.codegen.x86;
 import me.oskar.spl.ast.Program;
 import me.oskar.spl.codegen.CodeGenerator;
 import me.oskar.spl.codegen.CodePrinter;
+import me.oskar.spl.codegen.x86.program.ProgramWriter;
 import me.oskar.spl.table.ProcedureEntry;
 import me.oskar.spl.table.SymbolTable;
 
@@ -13,6 +14,8 @@ public class X86CodeGenerator implements CodeGenerator {
     @Override
     public void generateCode(Program program, SymbolTable symbolTable, PrintWriter printWriter, boolean headless) {
         var output = new CodePrinter(printWriter, 4);
+
+        var programWriter = new ProgramWriter(printWriter);
 
         output.println("section .text");
         output.incIndentLevel();

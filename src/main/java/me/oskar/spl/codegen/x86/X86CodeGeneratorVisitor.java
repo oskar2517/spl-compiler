@@ -3,6 +3,8 @@ package me.oskar.spl.codegen.x86;
 import me.oskar.spl.ast.*;
 import me.oskar.spl.ast.visitor.BaseVisitor;
 import me.oskar.spl.codegen.CodePrinter;
+import me.oskar.spl.codegen.x86.program.EnumeratedLabel;
+import me.oskar.spl.codegen.x86.program.EnumeratedRegister;
 import me.oskar.spl.table.ProcedureEntry;
 import me.oskar.spl.table.SymbolTable;
 import me.oskar.spl.table.VariableEntry;
@@ -10,8 +12,8 @@ import me.oskar.spl.type.ArrayType;
 
 public class X86CodeGeneratorVisitor extends BaseVisitor {
 
-    private Register currentRegister = new Register(-1);
-    private Label currentLabel = new Label(-1);
+    private EnumeratedRegister currentRegister = new EnumeratedRegister(-1);
+    private EnumeratedLabel currentLabel = new EnumeratedLabel(-1);
     private SymbolTable symbolTable;
     private final CodePrinter output;
 
@@ -28,12 +30,12 @@ public class X86CodeGeneratorVisitor extends BaseVisitor {
         currentRegister = currentRegister.previous();
     }
 
-    private Label nextLabel() {
+    private EnumeratedLabel nextLabel() {
         currentLabel = currentLabel.next();
         return currentLabel;
     }
 
-    private void generateCondition(Expression condition, Label label) {
+    private void generateCondition(Expression condition, EnumeratedLabel label) {
         var binaryExpression = (BinaryExpression) condition;
         binaryExpression.leftOperand.accept(this);
         binaryExpression.rightOperand.accept(this);

@@ -14,6 +14,10 @@ public class CodePrinter {
         this.indentWidth = indentWidth;
     }
 
+    public void resetIndentLevel() {
+        indentLevel = 0;
+    }
+
     public void incIndentLevel() {
         indentLevel++;
     }
