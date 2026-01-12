@@ -273,13 +273,9 @@ class LLVMCodeGeneratorVisitor extends BaseVisitor {
             output.println("%s = alloca %s, align %s", register, type, target.wordSize);
         }
 
-        output.println();
-
         for (var s : procedureDeclaration.body) {
             s.accept(this);
         }
-
-        output.println();
 
         output.println("ret void");
 

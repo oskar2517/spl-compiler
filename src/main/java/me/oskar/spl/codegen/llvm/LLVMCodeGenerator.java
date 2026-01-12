@@ -59,9 +59,6 @@ public class LLVMCodeGenerator implements CodeGenerator {
 
         output.println();
 
-        var codeGenerator = new LLVMCodeGeneratorVisitor(symbolTable, output, target);
-        program.accept(codeGenerator);
-
         output.println("define i32 @main() {");
         output.println("entry:");
         output.incIndentLevel();
@@ -69,5 +66,9 @@ public class LLVMCodeGenerator implements CodeGenerator {
         output.println("ret i32 0");
         output.decIndentLevel();
         output.println("}");
+        output.println();
+
+        var codeGenerator = new LLVMCodeGeneratorVisitor(symbolTable, output, target);
+        program.accept(codeGenerator);
     }
 }
